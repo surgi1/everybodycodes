@@ -22,23 +22,20 @@ const shout = () => arr[0].reduce((s, v, i) => s + '' + actors.filter(o => o.y =
 
 const round = () => {
     let clapper = actors.filter(o => o.x == clappingRowIndex && o.y == 0)[0];
-    // remove clapper from the row and add him to the next one
     actors.filter(o => o.x == clappingRowIndex).forEach(o => o.y--); // clapper has y = -1 now
-
     clapper.x = (clapper.x+1) % rows; // add clapper to the next row
 
     let clapperRowLen = actors.filter(o => o.x == clapper.x && o.y >= 0).length;
 
-    // claps + replacement
-    let v = clapper.v % (2*clapperRowLen);
+    let claps = clapper.v % (2*clapperRowLen);
 
-    if (v == 0) v = 2*clapperRowLen;
+    if (claps == 0) claps = 2*clapperRowLen;
 
-    if (v <= clapperRowLen) {
-        actors.filter(o => o.x == clapper.x && o.y >= v-1).forEach(o => o.y++);
-        clapper.y = Math.max(0, v-1);
+    if (claps <= clapperRowLen) {
+        actors.filter(o => o.x == clapper.x && o.y >= claps-1).forEach(o => o.y++);
+        clapper.y = Math.max(0, claps-1);
     } else {
-        let rest = v - clapperRowLen; // 5-3 = 2
+        let rest = claps - clapperRowLen; // 5-3 = 2
         let maxY = Math.max( ...actors.filter(o => o.x == clapper.x).map(o => o.y) ); // 2
         actors.filter(o => o.x == clapper.x && maxY - o.y < rest-1).forEach(o => o.y++);
         clapper.y = Math.max(0, maxY - (rest-2));

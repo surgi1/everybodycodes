@@ -1,24 +1,17 @@
-const getMap = s => s.split('\n').map(l => l.split('').map(v => v == '.' ? 0 : 1) );
+const getMap = s => s.split('\n').map(l => l.split('').map(v => v == '.' ? 0 : 1));
 const mapValue = map => map.flat().reduce((a, v) => a+v, 0)
 
-const advanceMap = (map, diagonals = false) => {
-    let res = map.map(row => row.slice());
-    for (let y = 0; y < map.length; y++) for (let x = 0; x < map[y].length; x++) {
-        if (map[y][x] == 0) {
-            res[y][x] = 0;
-            continue;
-        }
+const advanceMap = (map, diagonals = false, w = map[0].length, h = map.length) => map.map((row, y) => row.map((v, x) => {
+    if (v == 0) return 0;
+    
+    let arr = Array.from({length: 9}).map((_, n) => {
+        let j = (n % 3) - 1, i = Math.floor(n/3) - 1;
+        if (!diagonals && i*j != 0) return v; // fake val
+        return (y+i < 0 || y+i >= h || x+j < 0 || x+j >= w) ? 0 : map[y+i][x+j]
+    })
 
-        let arr = Array.from({length: 9}).map((_, n) => {
-            let i = (n % 3) - 1, j = Math.floor(n/3) - 1;
-            if (!diagonals && i*j != 0) return map[y][x]; // fake val
-            return (y+i < 0 || y+i > map.length-1 || x+j < 0 || x+j > map[0].length-1) ? 0 : map[y+i][x+j]
-        })
-
-        res[y][x] = map[y][x] + (arr.every(v => v == map[y][x]) ? 1 : 0);
-    }
-    return res;
-}
+    return v + (arr.every(n => n == v) ? 1 : 0);
+}))
 
 const run = (input, diagonals = false) => {
     let res = 0,
