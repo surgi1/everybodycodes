@@ -1,4 +1,4 @@
-let arr, actors = [], columns, clapperXPos, seen = {};
+let arr, actors = [], rows, clappingRowIndex, seen = {};
 
 const arr2actors = () => {
     actors = [];
@@ -17,22 +17,22 @@ const actors2arr = () => {
     });
 }
 
-const key = () => clapperXPos+'_'+JSON.stringify(arr);
+const key = () => clappingRowIndex+'_'+JSON.stringify(arr);
 const shout = () => arr[0].reduce((s, v, i) => s + '' + actors.filter(o => o.y == 0 && o.x == i)[0].v , '')
 
 const round = () => {
-    let clapper = actors.filter(o => o.x == clapperXPos && o.y == 0)[0];
+    let clapper = actors.filter(o => o.x == clappingRowIndex && o.y == 0)[0];
     // remove clapper from the row and add him to the next one
-    actors.filter(o => o.x == clapperXPos).forEach(o => o.y--); // clapper has y = -1 now
+    actors.filter(o => o.x == clappingRowIndex).forEach(o => o.y--); // clapper has y = -1 now
 
-    clapper.x = (clapper.x+1) % columns; // add clapper to the next row
+    clapper.x = (clapper.x+1) % rows; // add clapper to the next row
 
     let clapperRowLen = actors.filter(o => o.x == clapper.x && o.y >= 0).length;
 
-    // claps + re-placement
-    let v = clapper.v % (2 * clapperRowLen);
+    // claps + replacement
+    let v = clapper.v % (2*clapperRowLen);
 
-    if (v == 0) v = 2 * clapperRowLen;
+    if (v == 0) v = 2*clapperRowLen;
 
     if (v <= clapperRowLen) {
         actors.filter(o => o.x == clapper.x && o.y >= v-1).forEach(o => o.y++);
@@ -44,14 +44,14 @@ const round = () => {
         clapper.y = Math.max(0, maxY - (rest-2));
     }
 
-    clapperXPos = (clapperXPos+1) % columns;
+    clappingRowIndex = (clappingRowIndex+1) % rows;
 }
 
 const init = input => {
     arr = input.split("\n").map(l => l.split(' ').map(Number));
     arr2actors();
-    clapperXPos = 0;
-    columns = arr[0].length;
+    clappingRowIndex = 0;
+    rows = arr[0].length;
 }
 
 const part1 = () => {
@@ -60,9 +60,9 @@ const part1 = () => {
     console.log('p1', shout());
 }
 
+// could be sped up by watching the increments, BF works too tho
 const part2 = () => {
-    let shouts = {};
-    let i = 0;
+    let shouts = {}, i = 0;
     init(input2);
 
     while (true) {
@@ -80,23 +80,17 @@ const part2 = () => {
 }
 
 const part3 = () => {
-    init(input);
-
     let best = 0;
-    let i = 0;
+    init(input);
 
     while (true) {
         actors2arr();
         let k = key();
 
-        if (seen[k] !== undefined) {
-            //console.log('reached the same state second time, breaking on round', i);
-            break;
-        }
+        if (seen[k] !== undefined) break;
         seen[k] = 1;
 
         round();
-        i++;
         let b = Number(shout());
         if (best < b) best = b;
     }
@@ -105,7 +99,5 @@ const part3 = () => {
 }
 
 part1();
-
 part2();
-
 part3();
