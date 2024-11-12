@@ -7,14 +7,14 @@ const init = (input, nodes = {}) => {
 }
 
 const run = (input, p1 = false) => {
-    const getPaths = (tree, curNode, curPath) => {
-        if (curPath.includes(curNode)) {
-            //console.log('cycle detected, stopping traverse', curNode, curPath);
+    const getPaths = (tree, current, path) => {
+        if (path.includes(current)) {
+            //console.log('cycle detected, stopping traverse', current, path);
             return;
         }
-        curPath.push(curNode);
-        if (tree[curNode] === undefined) return paths.push(curPath.slice());
-        tree[curNode].forEach(n => getPaths(tree, n, curPath.slice()))
+        path.push(current);
+        if (tree[current] === undefined) return paths.push(path);
+        tree[current].forEach(n => getPaths(tree, n, path.slice()))
     }
 
     let tree = init(input),
