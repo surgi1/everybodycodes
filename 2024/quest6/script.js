@@ -7,23 +7,23 @@ const init = (input, nodes = {}) => {
 }
 
 const run = (input, p1 = false) => {
-    const getPaths = (tree, current, path) => {
+    let tree = init(input),
+        paths = [];
+
+    const getPaths = (current, path) => {
         if (path.includes(current)) {
-            //console.log('cycle detected, stopping traverse', current, path);
+            //console.log('cycle detected, stopping traverse', current, path); //BUG
             return;
         }
         path.push(current);
         if (tree[current] === undefined) return paths.push(path);
-        tree[current].forEach(n => getPaths(tree, n, path.slice()))
+        tree[current].forEach(n => getPaths(n, path.slice()))
     }
 
-    let tree = init(input),
-        paths = [];
-
-    getPaths(tree, 'RR', []);
+    getPaths('RR', []);
     
     let withApples = paths.filter(p => p[p.length-1] == '@');
-    let res = withApples.filter(p => withApples.filter(r => r.length == p.length).length === 1)
+    let res = withApples.filter(p => withApples.filter(r => r.length === p.length).length === 1)
 
     return p1 ? res[0].join('') : res[0].map(v => v[0]).join('');
 }
