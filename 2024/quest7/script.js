@@ -78,7 +78,7 @@ const planValid = plan => plan.filter(v => v == '+').length == 5 && plan.filter(
 const part3 = () => {
     const nmap = ['+', '-', '='];
 
-    let laps = 11; // no need to test for 2024 (altho it finishes in 2 minutes or so), since track.length (340) % plan.length (11) = 10, so every lap the plan is shifted by 1. After 11 plans it will reset and repeat.
+    let laps = 11; // no need to test for 2024 (altho it finishes in 2 minutes or so), since track.length (340) % plan.length (11) = 10, so every lap the plan is shifted by 1. After 11 laps it will reset and repeat.
 
     let track = buildTrack(track3).split(''),
         res = 0, total = Math.pow(3, 11),
