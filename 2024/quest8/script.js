@@ -54,4 +54,4 @@ const part3 = (hp = 2, hpa = 5, blocks = 160) => {
     return used - blocks; // TODO: in case of negative solve further ¯\_(ツ)_/¯
 }
 
-console.log('p3', part3(972562, 10, 202400000000));
+console.log('p3', part3(972562, 10, 202400000)); // bug in the game server had caused the creator to drop the brick count from 202400000000 to 202400000 
