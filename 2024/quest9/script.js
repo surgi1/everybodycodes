@@ -3,12 +3,10 @@ const init = input => input.split("\n").map(Number);
 const buildTable = (to, stamps) => {
     let arr = Array.from({length: to}, () => Infinity);
     arr[0] = 0;
-    for (let n = 1; n <= to; n++) {
-        arr[n] = Math.min(...stamps.map(stamp => {
-            if (n - stamp < 0) return Infinity;
-            return arr[n - stamp]+1;
-        }))
-    }
+    for (let n = 1; n <= to; n++) arr[n] = Math.min(...stamps.map(stamp => {
+        if (n - stamp < 0) return Infinity;
+        return arr[n - stamp]+1;
+    }))
     return arr;
 }
 
@@ -22,10 +20,8 @@ const run3 = (arr, stamps) => {
     
     return arr.reduce((a, v) => {
         let min = Infinity;
-        for (let v1 = Math.floor(v/2); v1 <= Math.floor(v/2) + 50; v1++) {
-            let v2 = v-v1;
-            min = Math.min(min, memo[v1] + memo[v2]);
-        }
+        for (let v1 = Math.floor(v/2); v1 <= Math.floor(v/2) + 50; v1++) 
+            min = Math.min(min, memo[v1] + memo[v-v1]);
         return a + min;
     }, 0);
 }
