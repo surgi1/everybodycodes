@@ -66,8 +66,7 @@ const part3 = (input, cols = 2, rows = 2) => {
         res = 0;
 
         for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-            let card = extractCard(marr, x, y, 6, 6);
-            let solved = solve(card, true);
+            let solved = solve(extractCard(marr, x, y, 6, 6), true);
             if (isSolved(solved.flat())) {
                 updateCard(x, y, solved);
                 res += val(extractMiddle(solved).join(''));
