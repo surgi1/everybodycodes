@@ -18,7 +18,7 @@ const solve = (data, starting = 'A', days = 4) => {
 }
 
 const part3 = (data, days = 20) => {
-    let min = Infinity; max = -Infinity;
+    let min = Infinity, max = -Infinity;
     Object.keys(data).forEach(k => {
         let res = solve(data, k, days);
         min = Math.min(min, res);
