@@ -21,10 +21,9 @@ const part3 = (data, days = 20) => {
     let min = Infinity; max = -Infinity;
     Object.keys(data).forEach(k => {
         let res = solve(data, k, days);
-        if (res < min) min = res;
-        if (res > max) max = res;
+        min = Math.min(min, res);
+        max = Math.max(max, res);
     })
-
     return max-min;
 }
 
