@@ -13,6 +13,10 @@ let targetst = `6 5
 6 7
 10 5`
 
+targetst = `6 5
+6 7
+10 5`
+
 let targets3 = `3948 3267
 3649 3272
 3704 3334
