@@ -42,38 +42,25 @@ const canHitTarget = (fromPos, _toPos, movingTarget = false, shift = 0, maxPower
     return false;
 }
 
-const rank = (v, p) => (v.charCodeAt(0) - 'A'.charCodeAt(0) + 1)*p;
+const rank = (catapult, power, target) => (catapult.val.charCodeAt(0) - 'A'.charCodeAt(0) + 1) * power * (target.val == 'H' ? 2 : 1);
 
-const solve = ([catapults, targets], movingTargets = false) => {
-    let res = 0;
+const solve = ([catapults, targets], movingTargets = false) => targets.reduce((sum, target) => {
+    let dist = Math.abs(catapults[2].pos[0]-target.pos[0]); // *1.5 as a good maximum comes from the projectile movement for lowest cannon; is spends 1/3 of its way going up and right, 1/3 just right, 1/3 going down. So in order to hit something as high as possible, power equal to 1.5*dist is needed
+    if (movingTargets) dist = Math.abs(catapults[2].pos[1]-target.pos[1]); // here we need to take into account the movement and the ability to hit the rock on projectile's way up in worst case
+    maxPower = Math.ceil(dist*1.5);
 
-    targets.forEach(target => {
-        let dist = Math.abs(catapults[2].pos[0]-target.pos[0]); // *1.5 as a good maximum comes from the projectile movement for lowest cannon; is spends 1/3 of its way going up and right, 1/3 just right, 1/3 going down. So in order to hit something as high as possible, power equal to 1.5*dist is needed
-        if (movingTargets) dist = Math.abs(catapults[2].pos[1]-target.pos[1]); // here we need to take into account the movement and the ability to hit the rock on projectile's way up in worst case
-        maxPower = Math.ceil(dist*1.5);
-
-        let ranks = [];
-        catapults.forEach(catapult => {
-            let power = canHitTarget(catapult.pos, target.pos, movingTargets, 0, maxPower);
-            if (power !== false) {
-                //console.log('catapult', catapult.val, 'can hit target at [x, y]', target.pos, 'with power', power);
-                ranks.push((target.val == 'H' ? 2 : 1) * rank(catapult.val, power));
-            }
-        })
-        if (ranks.length == 0) catapults.forEach(catapult => {
-            let power = canHitTarget(catapult.pos, target.pos, movingTargets, 1, maxPower);
-            if (power !== false) {
-                //console.log('catapult', catapult.val, 'can hit shifted target at [x, y]', target.pos, 'with power', power);
-                ranks.push((target.val == 'H' ? 2 : 1) * rank(catapult.val, power));
-            }
-        })
-
-        res += Math.min(...ranks);
+    let ranks = [];
+    catapults.forEach(catapult => {
+        let power = canHitTarget(catapult.pos, target.pos, movingTargets, 0, maxPower);
+        if (power !== false) ranks.push(rank(catapult, power, target));
+    })
+    if (ranks.length == 0) catapults.forEach(catapult => {
+        let power = canHitTarget(catapult.pos, target.pos, movingTargets, 1, maxPower);
+        if (power !== false) ranks.push(rank(catapult, power, target));
     })
 
-    //console.log(targets);
-    return res;
-}
+    return sum + Math.min(...ranks);
+}, 0)
 
 console.log('p1', solve(init(input1)));
 console.log('p2', solve(init(input2)));
