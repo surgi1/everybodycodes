@@ -9,15 +9,17 @@ const solve = (map, startVal = 'S', endVal = 'E') => {
     }
 
     let min = Infinity,
-        stack = [{
-            pos: findStart(),
-            visited: [], //'x_y'
-            t: 0,
-        }],
+        queue = new FastPriorityQueue((a, b) => b.t > a.t),
         seen = {};
 
-    while (stack.length > 0) {
-        let p = stack.shift();
+    queue.add({
+        pos: findStart(),
+        visited: [], //'x_y'
+        t: 0,
+    })
+
+    while (!queue.isEmpty()) {
+        let p = queue.poll();
 
         if (mp(p.pos).v == endVal) {
             if (p.t < min) min = p.t;
@@ -34,7 +36,7 @@ const solve = (map, startVal = 'S', endVal = 'E') => {
             let nk = npos.join('_');
             if (p.visited.includes(nk)) return true;
             let dist = Math.abs(mp(npos).level - mp(p.pos).level);
-            stack.push({
+            queue.add({
                 pos: npos,
                 visited: [...p.visited, nk],
                 t: p.t + 1 + Math.min( dist, 10-dist )
