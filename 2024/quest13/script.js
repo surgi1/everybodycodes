@@ -19,27 +19,27 @@ const solve = (map, startVal = 'S', endVal = 'E') => {
     })
 
     while (!queue.isEmpty()) {
-        let p = queue.poll();
+        let curr = queue.poll();
 
-        if (mp(p.pos).v == endVal) {
-            if (p.t < min) min = p.t;
+        if (mp(curr.pos).v == endVal) {
+            if (curr.t < min) min = curr.t;
             continue;
         }
 
-        let k = p.pos.join('_');
-        if (seen[k] !== undefined && seen[k] <= p.t) continue;
-        seen[k] = p.t;
+        let k = curr.pos.join('_');
+        if (seen[k] !== undefined && seen[k] <= curr.t) continue;
+        seen[k] = curr.t;
 
         DIRS.forEach(d => {
-            let npos = [0, 1].map(c => p.pos[c]+d[c]);
+            let npos = [0, 1].map(c => curr.pos[c]+d[c]);
             if (npos[0] < 0 || npos[0] > map[0].length-1 || npos[1] < 0 || npos[1] > map.length-1 || mp(npos).v == '#') return true;
             let nk = npos.join('_');
-            if (p.visited.includes(nk)) return true;
-            let dist = Math.abs(mp(npos).level - mp(p.pos).level);
+            if (curr.visited.includes(nk)) return true;
+            let dist = Math.abs(mp(npos).level - mp(curr.pos).level);
             queue.add({
                 pos: npos,
-                visited: [...p.visited, nk],
-                t: p.t + 1 + Math.min( dist, 10-dist )
+                visited: [...curr.visited, nk],
+                t: curr.t + 1 + Math.min( dist, 10-dist )
             })
         })
     }
