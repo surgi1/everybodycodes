@@ -1,6 +1,6 @@
 # Everybody.Codes 2024 - Quest 8
 
-https://everybody.codes/event/2024/quest/8
+https://everybody.codes/event/2024/quests/8
 
 JavaScript implementation
 

@@ -1,6 +1,6 @@
 # Everybody.Codes 2024 - Quest 5
 
-https://everybody.codes/event/2024/quest/5
+https://everybody.codes/event/2024/quests/5
 
 JavaScript implementation
 
