@@ -1,4 +1,4 @@
-const init = (input) => input.split(',').map(s => [s[0], Number(s.substr(1))] )
+const init = (input) => input.split(',').map(s => [s[0], Number(s.substr(1))]);
 const init2 = (input) => input.split("\n").map(s => init(s));
 const addVect = (a, b) => a.map((v, c) => v+b[c]);
 const k = v => v.join('_');
