@@ -52,9 +52,8 @@ const p2 = (data, raw = false) => {
 }
 
 // floodfill along the branches in 3d
-const shortest = (from, segs, to) => {
+const distanceMap = (from, segs) => {
     let filled = {},
-        minDist = Infinity,
         stack = [{
             pos: [...from],
             dist: 0
@@ -62,18 +61,6 @@ const shortest = (from, segs, to) => {
 
     while (stack.length != 0) {
         let cur = stack.shift();
-
-        // this shortcut work only as long as we don't have a "hole" in the trunk
-        if (cur.pos[0] == to[0] && cur.pos[2] == to[2]) {
-            cur.dist += Math.abs(cur.pos[1] - to[1]);
-            cur.pos[1] = to[1];
-        }
-
-        if (cur.pos[0] == to[0] && cur.pos[2] == to[2] && cur.pos[1] == to[1]) {
-            if (cur.dist < minDist) minDist = cur.dist;
-            continue;
-        }
-
         let ck = k(cur.pos);
         if (filled[ck] !== undefined && filled[ck] <= cur.dist) continue;
         filled[ck] = cur.dist;
@@ -89,16 +76,18 @@ const shortest = (from, segs, to) => {
             })
         })
     }
-    return minDist;
+    return filled;
 }
 
-// rather slow, takes approx ~6s, could be sped up by flood filling from the trunk
+
 const p3 = data => {
     let segs = p2(data, true);
-    let leaves = Object.values(segs).filter(o => [SEG_TYPE.LEAF, SEG_TYPE.TRUNK_LEAF].includes(o.type)).map(o => o.pos);
-    let trunks = Object.values(segs).filter(o => [SEG_TYPE.TRUNK, SEG_TYPE.TRUNK_LEAF].includes(o.type)).map(o => o.pos);
+    let leaves = Object.entries(segs).filter(([k, o]) => [SEG_TYPE.LEAF, SEG_TYPE.TRUNK_LEAF].includes(o.type)).map(([k, o]) => k);
+    let trunksPos = Object.values(segs).filter(o => [SEG_TYPE.TRUNK, SEG_TYPE.TRUNK_LEAF].includes(o.type)).map(o => o.pos);
 
-    return Math.min(...trunks.map(trunkPos => leaves.reduce((a, leafPos) => a + shortest(leafPos, segs, trunkPos), 0)))
+    let trunkFills = trunksPos.map(pos => distanceMap(pos, segs));
+
+    return Math.min(...trunksPos.map((trunkPos, trunkId) => leaves.reduce((a, leafK) => a + trunkFills[trunkId][leafK], 0)))
 }
 
 console.log('p1', p1(init(input1)));
