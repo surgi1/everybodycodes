@@ -117,7 +117,7 @@ const p2 = (map, start, end) => {
     return min;
 }
 
-// this is not a generic P3 solution; it works for my input, which has juscntion points from middle section to left and right at the very bottom, and has herbs close enough
+// this is not a generic P3 solution; it works for my input, which has junction points from middle section to left and right at the very bottom, and has herbs close enough
 // still, I had to alter the input slightly by renaming one of the herbs in the lowest line middle section (K->L) so they are unique (and had to be visited)
 const p3 = (map) => {
     let maps = [];
