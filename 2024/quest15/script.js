@@ -101,6 +101,7 @@ const p2 = (map, start, end) => {
     const recur = (seq, lastDist, lastDmap) => {
         fruits.filter(o => o.type == seq[0]).forEach(fruit => {
             let dist = lastDist + lastDmap[fruit.p[1]][fruit.p[0]];
+            if (dist >= min) return true;
             let dmap = distanceMap(map, fruit.p);
 
             if (seq.length > 1) {
