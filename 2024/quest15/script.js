@@ -17,9 +17,9 @@ const distanceMap = (map, from) => {
     let key = k(from);
     if (dmaps[key] !== undefined) return dmaps[key];
     let stack = [{
-            p: [...from],
-            dist: 0
-        }]
+        p: [...from],
+        dist: 0
+    }]
 
     let filled = map.map(row => row.map(v => Infinity))
 
@@ -54,9 +54,7 @@ const p1 = (map) => {
         fruitTypes[v] = 1;
     }))
 
-    //console.log(map, start, fruits, fruitTypes);
     let dmap = distanceMap(map, start);
-
     return 2*Math.min(...fruits.map(o => dmap[o.p[1]][o.p[0]]))
 }
 
@@ -118,24 +116,23 @@ const p2 = (map, start, end) => {
     return min;
 }
 
-// this is not a generic P3 solution; it works for my input, which has junction points from middle section to left and right at the very bottom, and has herbs close enough
-// still, I had to alter the input slightly by renaming one of the herbs in the lowest line middle section (K->L) so they are unique (and had to be visited)
+// this is not a generic solution; it works for al inputs known to me tho, that have junction points from middle section to left and right at the very bottom, and has herbs close enough
+// we're altering the input slightly by renaming one of the herbs in the lowest line middle section (K->L) so they both became unique (and thus had to be visited)
+// a more general approach would be BFS on highly evolving graph, but nobody's ain't got no time for that
 const p3 = (map) => {
-    let maps = [];
+    let maps = [], h = map.length, w = 85;
     for (let i = 0; i < 3; i++) {
         maps[i] = map.map(row => row.slice(85*i, 85*(i+1)))
     }
+    maps[1][h-2][maps[1][h-2].indexOf('K')] = 'L';
 
-    //maps.forEach(m => m.forEach(l => console.log(l.join(''))) );
+    let map0Dist = p2(maps[0], [w-1, h-2]) + 1; // +1 for moving between maps
+    let map2Dist = p2(maps[2], [0, h-2]) + 1; // +1 for moving between maps
 
-    let map0Dist = p2(maps[0], [maps[0][0].length-1, maps[0].length-2]) + 1; // +1 for moving between maps
-    let map2Dist = p2(maps[2], [0, maps[2].length-2]) + 1; // +1 for moving between maps
-
-    let dist = p2(maps[1]) + 2 + 4; // +2 from moving between maps, +4 from moving from the herbs 1 square away from the corner
+    let dist = p2(maps[1]) + 2 + 2*maps[1][h-2].indexOf('L') + 2*((w-1) - maps[1][h-2].indexOf('K')); // +2 from moving between maps, +4 from moving from the herbs 1 square away from the corner as maps[1][h-2].indexOf('L') = 1
 
     return map0Dist + map2Dist + dist;
 }
-
 
 console.log('p1', p1(init(input1)));
 console.log('p2', p2(init(input2)));
