@@ -9,7 +9,6 @@ const init = (input) => {
             if (s.join('').trim() != '') w.push(s);
         })
     })
-
     return wheels;
 };
 
@@ -26,31 +25,22 @@ const getPull3 = (rots, wheels, pos, shift = 0) => {
     return [rots.map((n, i) => wheels[i][pos[i]]), pos];
 }
 
-const getScore = s => {
-    let o = {};
+const getScore = (s, o = {}) => {
     s.forEach(l => (o[l] === undefined ? o[l] = 1 : o[l]++));
-    let vals = Object.values(o);
-    return vals.reduce((a, v) => a + Math.max(0, v-2), 0);
+    return Object.values(o).reduce((a, v) => a + Math.max(0, v-2), 0);
 }
 
 const p2 = (rots, wheels, totalReps = 202420242024) => {
-    let uniques = lcmAll(wheels.map(w => w.length));
-    let res = 0;
+    let uniques = lcmAll(wheels.map(w => w.length)),
+        masterReps = Math.floor(totalReps/uniques),
+        res = 0;
 
-    for (let i = 1; i <= uniques; i++) {
-        let pull = getPull(rots, wheels, i);
-        let pullScore = getScore( pull.map(eyes).flat() );
-        res += pullScore;
-    }
+    for (let i = 1; i <= uniques; i++) res += getScore( getPull(rots, wheels, i).map(eyes).flat() );
 
-    let masterReps = Math.floor(totalReps/uniques);
     res *= masterReps;
 
-    for (let i = masterReps*uniques+1; i <= totalReps; i++) {
-        let pull = getPull(rots, wheels, i);
-        let pullScore = getScore( pull.map(eyes).flat() );
-        res += pullScore;
-    }
+    for (let i = masterReps*uniques+1; i <= totalReps; i++) res += getScore( getPull(rots, wheels, i).map(eyes).flat() );
+
     return res;
 }
 
