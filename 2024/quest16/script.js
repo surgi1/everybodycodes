@@ -21,8 +21,6 @@ const eyes = a => [a[0], a[2]];
 const getPull = (rots, wheels, repeats) => rots.map((n, i) => wheels[i][(n*repeats) % wheels[i].length])
 const p1 = (rots, wheels, repeats = 100) => getPull(rots, wheels, repeats).map(n => n.join('')).join(' ');
 
-let pullCache = {};
-
 const getPull3 = (rots, wheels, pos, shift = 0) => {
     pos = pos.map((p, i) => (p + rots[i] + shift + wheels[i].length) % wheels[i].length);
     return [rots.map((n, i) => wheels[i][pos[i]]), pos];
