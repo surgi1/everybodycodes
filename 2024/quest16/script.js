@@ -26,17 +26,11 @@ const getPull3 = (rots, wheels, pos, shift = 0) => {
     return [rots.map((n, i) => wheels[i][pos[i]]), pos];
 }
 
-let cache = {}
-
 const getScore = s => {
-    let k = s.join('');
-    if (cache[k] !== undefined) return cache[k];
     let o = {};
     s.forEach(l => (o[l] === undefined ? o[l] = 1 : o[l]++));
     let vals = Object.values(o);
-    let res = vals.reduce((a, v) => a + Math.max(0, v-2), 0);
-    cache[k] = res;
-    return res;
+    return vals.reduce((a, v) => a + Math.max(0, v-2), 0);
 }
 
 const p2 = (rots, wheels, totalReps = 202420242024) => {
@@ -60,38 +54,44 @@ const p2 = (rots, wheels, totalReps = 202420242024) => {
     return res;
 }
 
-// p3 is real slow, about 40s. Likely need to figure out a better caching
-const p3 = (rots, wheels, reps = 10) => {
-    let min = Infinity, max = -Infinity,
-        seenMin = {}, seenMax = {};
+const EXTREME_TYPE = {
+    MIN: 0,
+    MAX: 1
+}
 
-    const recur = (pullsLeft, score, pos) => {
+const EXTREME_TYPES = [{
+    val: Math.min,
+    init: Infinity
+}, {
+    val: Math.max,
+    init: -Infinity
+}]
+
+const p3 = (rots, wheels, reps = 10) => {
+    let cache = EXTREME_TYPES.map(t => ({}));
+
+    const recur = (pullsLeft, pos, type = EXTREME_TYPE.MIN) => {
         let k = pos + '_' + pullsLeft;
         
-        let goon = false;
-
-        if (seenMin[k] === undefined || seenMin[k] > score) {seenMin[k] = score; goon = true;}
-        if (seenMax[k] === undefined || seenMax[k] < score) {seenMax[k] = score; goon = true;}
-
-        if (!goon) return;
+        if (cache[type][k] !== undefined) return cache[type][k];
+        cache[type][k] = EXTREME_TYPES[type].init;
         
-        if (pullsLeft <= 0) {
-            if (score < min) min = score;
-            if (score > max) max = score;
-            return;
+        let vals = [-1, 0, 1].map(shift => getPull3(rots, wheels, [...pos], shift));
+        let scores = vals.map(([pull, newPos]) => getScore(pull.map(eyes).flat()));
+
+        if (pullsLeft > 1) {
+            scores = scores.map((score, i) => score + recur(pullsLeft-1, vals[i][1], type));
         }
 
-        [-1, 0, 1]
-            .map(shift => getPull3(rots, wheels, [...pos], shift))
-            .forEach(([pull, newPos]) => recur(pullsLeft-1, score + getScore(pull.map(eyes).flat()), newPos));
+        let score = EXTREME_TYPES[type].val(...scores);
+        cache[type][k] = score;
+
+        return score;
     }
 
-    recur(reps, 0, Array.from({length:rots.length}).fill(0));
-
-    return max + ' ' + min;
+    return recur(reps, Array.from({length:rots.length}).fill(0), EXTREME_TYPE.MAX) + ' ' + recur(reps, Array.from({length:rots.length}).fill(0), EXTREME_TYPE.MIN)
 }
 
 console.log('p1', p1(rots1, init(input1)));
 console.log('p2', p2(rots2, init(input2)));
 console.log('p3', p3(rots3, init(input3), 256))
-//console.log('p3', p3(rotst, init(input3t), 256))
