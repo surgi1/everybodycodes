@@ -81,13 +81,9 @@ const p3 = (rots, wheels, reps = 10) => {
             return;
         }
 
-        let [pull1, pos1] = getPull3(rots, wheels, [...pos]);
-        let [pull2, pos2] = getPull3(rots, wheels, [...pos], 1);
-        let [pull3, pos3] = getPull3(rots, wheels, [...pos], -1);
-
-        recur(pullsLeft-1, score + getScore(pull1.map(eyes).flat()), pos1);
-        recur(pullsLeft-1, score + getScore(pull2.map(eyes).flat()), pos2);
-        recur(pullsLeft-1, score + getScore(pull3.map(eyes).flat()), pos3);
+        [-1, 0, 1]
+            .map(shift => getPull3(rots, wheels, [...pos], shift))
+            .forEach(([pull, newPos]) => recur(pullsLeft-1, score + getScore(pull.map(eyes).flat()), newPos));
     }
 
     recur(reps, 0, Array.from({length:rots.length}).fill(0));
@@ -98,3 +94,4 @@ const p3 = (rots, wheels, reps = 10) => {
 console.log('p1', p1(rots1, init(input1)));
 console.log('p2', p2(rots2, init(input2)));
 console.log('p3', p3(rots3, init(input3), 256))
+//console.log('p3', p3(rotst, init(input3t), 256))
