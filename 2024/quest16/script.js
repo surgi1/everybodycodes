@@ -54,23 +54,18 @@ const p2 = (rots, wheels, totalReps = 202420242024) => {
     return res;
 }
 
-const EXTREME_TYPE = {
-    MIN: 0,
-    MAX: 1
-}
-
 const EXTREME_TYPES = [{
-    val: Math.min,
-    init: Infinity
-}, {
     val: Math.max,
     init: -Infinity
+}, {
+    val: Math.min,
+    init: Infinity
 }]
 
 const p3 = (rots, wheels, reps = 10) => {
     let cache = EXTREME_TYPES.map(t => ({}));
 
-    const recur = (pullsLeft, pos, type = EXTREME_TYPE.MIN) => {
+    const recur = (pullsLeft, pos, type) => {
         let k = pos + '_' + pullsLeft;
         
         if (cache[type][k] !== undefined) return cache[type][k];
@@ -89,7 +84,7 @@ const p3 = (rots, wheels, reps = 10) => {
         return score;
     }
 
-    return recur(reps, Array.from({length:rots.length}).fill(0), EXTREME_TYPE.MAX) + ' ' + recur(reps, Array.from({length:rots.length}).fill(0), EXTREME_TYPE.MIN)
+    return EXTREME_TYPES.map((t, tId) => recur(reps, Array.from({length:rots.length}).fill(0), tId)).join(' ');
 }
 
 console.log('p1', p1(rots1, init(input1)));
