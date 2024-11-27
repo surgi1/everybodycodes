@@ -26,7 +26,7 @@ const getPull3 = (rots, wheels, pos, shift = 0) => {
 }
 
 const getScore = (s, o = {}) => {
-    s.forEach(l => (o[l] === undefined ? o[l] = 1 : o[l]++));
+    s.map(eyes).flat().forEach(l => (o[l] === undefined ? o[l] = 1 : o[l]++));
     return Object.values(o).reduce((a, v) => a + Math.max(0, v-2), 0);
 }
 
@@ -35,11 +35,11 @@ const p2 = (rots, wheels, totalReps = 202420242024) => {
         masterReps = Math.floor(totalReps/uniques),
         res = 0;
 
-    for (let i = 1; i <= uniques; i++) res += getScore( getPull(rots, wheels, i).map(eyes).flat() );
+    for (let i = 1; i <= uniques; i++) res += getScore(getPull(rots, wheels, i));
 
     res *= masterReps;
 
-    for (let i = masterReps*uniques+1; i <= totalReps; i++) res += getScore( getPull(rots, wheels, i).map(eyes).flat() );
+    for (let i = masterReps*uniques+1; i <= totalReps; i++) res += getScore(getPull(rots, wheels, i));
 
     return res;
 }
@@ -55,18 +55,16 @@ const EXTREME_TYPES = [{
 const p3 = (rots, wheels, reps = 10) => {
     let cache = EXTREME_TYPES.map(t => ({}));
 
-    const recur = (pullsLeft, pos, type) => {
-        let k = pos + '_' + pullsLeft;
+    const recur = (turns, pos, type) => {
+        let k = pos + '_' + turns;
         
         if (cache[type][k] !== undefined) return cache[type][k];
         cache[type][k] = EXTREME_TYPES[type].init;
         
-        let vals = [-1, 0, 1].map(shift => getPull3(rots, wheels, [...pos], shift));
-        let scores = vals.map(([pull, newPos]) => getScore(pull.map(eyes).flat()));
+        let paps = [-1, 0, 1].map(shift => getPull3(rots, wheels, [...pos], shift)); // pull results and positions for each shift
+        let scores = paps.map(([pull, newPos]) => getScore(pull));
 
-        if (pullsLeft > 1) {
-            scores = scores.map((score, i) => score + recur(pullsLeft-1, vals[i][1], type));
-        }
+        if (turns > 1) scores = scores.map((v, i) => v + recur(turns-1, paps[i][1], type));
 
         let score = EXTREME_TYPES[type].val(...scores);
         cache[type][k] = score;
@@ -74,7 +72,7 @@ const p3 = (rots, wheels, reps = 10) => {
         return score;
     }
 
-    return EXTREME_TYPES.map((t, tId) => recur(reps, Array.from({length:rots.length}).fill(0), tId)).join(' ');
+    return EXTREME_TYPES.map((t, tId) => recur(reps, Array(rots.length).fill(0), tId)).join(' ');
 }
 
 console.log('p1', p1(rots1, init(input1)));
