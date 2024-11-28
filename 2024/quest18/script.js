@@ -1,5 +1,4 @@
 const init = (input) => input.split("\n").map((line, y) => line.split('').map((v, x) => v));
-const addVect = (a, b) => a.map((v, c) => v+b[c]);
 
 const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
@@ -12,12 +11,12 @@ const distanceMap = (map, froms) => {
     let filled = map.map(row => row.map(v => Infinity))
 
     while (stack.length != 0) {
-        let cur = stack.shift();
+        let cur = stack.pop();
         if (filled[cur.p[1]][cur.p[0]] <= cur.dist) continue;
         filled[cur.p[1]][cur.p[0]] = cur.dist;
 
-        DIRS.forEach(m => {
-            let np = addVect(cur.p, m);
+        DIRS.forEach(([dx, dy]) => {
+            let np = [cur.p[0]+dx, cur.p[1]+dy];
             if (np[0] < 0 || np[0] > map[0].length-1 || np[1] < 0 || np[1] > map.length-1) return true;
             if ('#' == map[np[1]][np[0]]) return true;
             if (filled[np[1]][np[0]] < cur.dist) return true;
@@ -48,7 +47,7 @@ const run2 = (map) => {
     return Math.max(...dists);
 }
 
-// takes approx 35s, no optimization
+// takes ~5s
 const run3 = (map) => {
     let min = Infinity;
     let palms = [];
@@ -68,4 +67,6 @@ const run3 = (map) => {
 
 console.log('p1', run1(init(input1)));
 console.log('p2', run2(init(input2)));
+console.time('p3');
 console.log('p3', run3(init(input3)));
+console.timeEnd('p3');
