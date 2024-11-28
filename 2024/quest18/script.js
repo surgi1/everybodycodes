@@ -1,11 +1,10 @@
-const init = (input) => input.split("\n").map((line, y) => line.split('').map((v, x) => v));
-
+const init = input => input.split("\n").map(row => row.split(''));
+const map2d = (map, cb) => map.map((row, y) => row.map((v, x) => cb(v, x, y)));
 const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
-const distanceMap = (map, froms) => {
-    let stack = froms.map(from => [...from, 0]);
-
-    let dmap = map.map(row => row.map(v => Infinity)),
+const distanceMap = (map, startingPoints) => {
+    let stack = startingPoints.map(([x, y]) => [x, y, 0]),
+        dmap = map2d(map, () => Infinity),
         rows = map.length, cols = map[0].length, cur;
 
     while (cur = stack.pop()) {
@@ -24,28 +23,17 @@ const distanceMap = (map, froms) => {
 }
 
 const run = (map, p2 = false) => {
-    let dmap = distanceMap(map, p2 ? [[0, 1], [map[0].length-1, map.length-2]] : [[0, 1]]),
-        dist = 0;
-
-    map.forEach((row, y) => row.forEach((v, x) => {
-        if (v == 'P' && dmap[y][x] > dist) dist = dmap[y][x];
-    }))
-
-    return dist;
+    let dmap = distanceMap(map, p2 ? [[0, 1], [map[0].length-1, map.length-2]] : [[0, 1]]);
+    return Math.max(...map2d(map, (v, x, y) => v == 'P' ? dmap[y][x] : 0).flat());
 }
 
-// takes ~5s
-const run3 = (map) => {
-    let min = Infinity, palms = [];
+// originally solved by g'old BF that finished in ~5s. Sped up by computing dmaps from palms and summing the distances at dot points
+const run3 = (map, palms = []) => {
+    map2d(map, (v, x, y) => (v == 'P') && palms.push([x, y]));
 
-    map.forEach((row, y) => row.forEach((v, x) => (v == 'P') && palms.push([x, y])))
+    let dmaps = palms.map(([x, y]) => distanceMap(map, [[x, y]]));
 
-    map.forEach((row, y) => row.forEach((v, x) => {
-        if (v != '.') return true;
-        let dmap = distanceMap(map, [[x, y]]);
-        min = Math.min(min, palms.reduce((a, [x, y]) => a + dmap[y][x], 0));
-    }))
-    return min;
+    return Math.min(...map2d(map, (v, x, y) => v != '.' ? Infinity : dmaps.reduce((a, dm) => a + dm[y][x], 0)).flat())
 }
 
 console.log('p1', run(init(input1)));
