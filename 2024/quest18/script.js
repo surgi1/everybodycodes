@@ -11,15 +11,13 @@ const distanceMap = (map, froms) => {
     while (cur = stack.pop()) {
         let [x, y, dist] = cur;
 
-        if (dmap[y][x] <= dist) continue;
         dmap[y][x] = dist;
 
         DIRS.forEach(([dx, dy]) => {
             let nx = x+dx, ny = y+dy;
             if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) return true;
             if ('#' == map[ny][nx]) return true;
-            if (dmap[ny][nx] < dist) return true;
-            stack.push([nx, ny, dist+1]);
+            if (dmap[ny][nx] > dist+1) stack.push([nx, ny, dist+1]);
         })
     }
     return dmap;
