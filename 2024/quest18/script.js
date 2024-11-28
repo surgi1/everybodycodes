@@ -67,6 +67,4 @@ const run3 = (map) => {
 
 console.log('p1', run1(init(input1)));
 console.log('p2', run2(init(input2)));
-console.time('p3');
 console.log('p3', run3(init(input3)));
-console.timeEnd('p3');

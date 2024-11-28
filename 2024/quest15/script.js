@@ -116,7 +116,7 @@ const p2 = (map, start, end) => {
     return min;
 }
 
-// this is not a generic solution; it works for al inputs known to me tho, that have junction points from middle section to left and right at the very bottom, and has herbs close enough
+// this is not a generic solution; it works for all inputs known to me tho, that have junction points from middle section to left and right at the very bottom, and has herbs close enough
 // we're altering the input slightly by renaming one of the herbs in the lowest line middle section (K->L) so they both became unique (and thus had to be visited)
 // a more general approach would be BFS on highly evolving graph, but nobody's ain't got no time for that
 const p3 = (map) => {
