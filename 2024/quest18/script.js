@@ -9,10 +9,9 @@ const distanceMap = (map, froms) => {
     }));
 
     let dmap = map.map(row => row.map(v => Infinity)),
-        rows = map.length, cols = map[0].length;
+        rows = map.length, cols = map[0].length, cur;
 
-    while (stack.length != 0) {
-        let cur = stack.pop();
+    while (cur = stack.pop()) {
         if (dmap[cur.p[1]][cur.p[0]] <= cur.dist) continue;
         dmap[cur.p[1]][cur.p[0]] = cur.dist;
 
