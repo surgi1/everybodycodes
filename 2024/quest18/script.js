@@ -33,7 +33,7 @@ const run3 = (map, palms = []) => {
 
     let dmaps = palms.map(([x, y]) => distanceMap(map, [[x, y]]));
 
-    return Math.min(...map2d(map, (v, x, y) => v != '.' ? Infinity : dmaps.reduce((a, dm) => a + dm[y][x], 0)).flat())
+    return Math.min(...map2d(map, (v, x, y) => v == '.' ? dmaps.reduce((a, dm) => a + dm[y][x], 0) : Infinity).flat())
 }
 
 console.log('p1', run(init(input1)));
