@@ -49,8 +49,7 @@ const run3 = (map) => {
     map.forEach((row, y) => row.forEach((v, x) => {
         if (v != '.') return true;
         let dmap = distanceMap(map, [[x, y]]);
-        let dist = palms.reduce((a, [x, y]) => a + dmap[y][x], 0);
-        if (dist < min) min = dist;
+        min = Math.min(min, palms.reduce((a, [x, y]) => a + dmap[y][x], 0));
     }))
     return min;
 }
