@@ -3,27 +3,23 @@ const init = (input) => input.split("\n").map((line, y) => line.split('').map((v
 const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
 const distanceMap = (map, froms) => {
-    let stack = froms.map(from => ({
-        p: [...from],
-        dist: 0
-    }));
+    let stack = froms.map(from => [...from, 0]);
 
     let dmap = map.map(row => row.map(v => Infinity)),
         rows = map.length, cols = map[0].length, cur;
 
     while (cur = stack.pop()) {
-        if (dmap[cur.p[1]][cur.p[0]] <= cur.dist) continue;
-        dmap[cur.p[1]][cur.p[0]] = cur.dist;
+        let [x, y, dist] = cur;
+
+        if (dmap[y][x] <= dist) continue;
+        dmap[y][x] = dist;
 
         DIRS.forEach(([dx, dy]) => {
-            let p = [cur.p[0]+dx, cur.p[1]+dy];
-            if (p[0] < 0 || p[0] >= cols || p[1] < 0 || p[1] >= rows) return true;
-            if ('#' == map[p[1]][p[0]]) return true;
-            if (dmap[p[1]][p[0]] < cur.dist) return true;
-            stack.push({
-                p: p,
-                dist: cur.dist+1
-            })
+            let nx = x+dx, ny = y+dy;
+            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) return true;
+            if ('#' == map[ny][nx]) return true;
+            if (dmap[ny][nx] < dist) return true;
+            stack.push([nx, ny, dist+1]);
         })
     }
     return dmap;
