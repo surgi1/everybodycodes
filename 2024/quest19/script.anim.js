@@ -73,11 +73,23 @@ const run3 = ([rots, grid], repeats = 1) => {
     let n = 0;
     const loop = () => {
         //el.innerHTML = grid.map(line => line.join('')).join("\n");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.font = "12px Courier New";
+        ctx.fillStyle = '#eebc1d';
         ctx.fillText('Iterations: '+n, 12, 12);
         grid.forEach((row, y) => {
-            ctx.fillText(row.map(v => v == '.' ? ' ' : v).join(''), 12, 24+y*12);
+            row.forEach((v, x) => {
+                if ('><123456789'.includes(v)) {
+                    ctx.font = "bold 18px Courier New";
+                    ctx.fillStyle = 'green';
+                    ctx.fillText(v, 8*x, 36+y*10);
+                } else if (v != '.') {
+                    ctx.font = "12px Courier New";
+                    ctx.fillStyle = '#eebc1d';
+                    ctx.fillText(v, 8*x, 36+y*10);
+                }
+            })
         })
         requestAnimationFrame(loop);
         grid = xformGrid(grid, xform);
