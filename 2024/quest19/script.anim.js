@@ -57,7 +57,6 @@ const findQuack = grid => {
 
 const run3 = ([rots, grid], repeats = 1) => {
     resizeCanvas();
-    ctx.font = "12px Courier New";
 
     let mult = 1;
     while (Math.round(repeats/(Math.pow(2, mult))) == repeats/(Math.pow(2, mult))) mult++;
