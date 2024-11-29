@@ -3,12 +3,31 @@ const init = (input) => {
     return [rots.split(''), gridLines.split("\n").map(line => line.split(''))];
 }
 
-const canvas = document.getElementById('root');
+function createHiPPICanvas(width, height) {
+    const ratio = 2;
+    const canvas = document.getElementById('root');
+
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    canvas.getContext("2d").scale(ratio, ratio);
+
+    return canvas;
+}
+
+//const canvas = document.getElementById('root');
+const canvas = createHiPPICanvas(window.innerWidth, window.innerHeight);
 const ctx = canvas.getContext("2d");
 
 const resizeCanvas = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const ratio = 2;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
 }
 
 window.addEventListener('resize', resizeCanvas, false);
@@ -75,19 +94,25 @@ const run3 = ([rots, grid], repeats = 1) => {
         //el.innerHTML = grid.map(line => line.join('')).join("\n");
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "12px Courier New";
-        ctx.fillStyle = '#eebc1d';
-        ctx.fillText('Iterations: '+n, 12, 12);
+        ctx.font = "bold 36px Courier New";
+        ctx.fillStyle = '#000';
+        ctx.fillText('Iterations: '+n, 20, 32);
         grid.forEach((row, y) => {
             row.forEach((v, x) => {
                 if ('><123456789'.includes(v)) {
-                    ctx.font = "bold 18px Courier New";
+                    ctx.save();
+                    ctx.font = "bold 32px Courier New";
+                    ctx.shadowColor = "green";
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.shadowBlur = 20;
                     ctx.fillStyle = 'green';
-                    ctx.fillText(v, 8*x, 36+y*10);
+                    ctx.fillText(v, 20+14*x-2, 66+y*18);
+                    ctx.restore();
                 } else if (v != '.') {
-                    ctx.font = "12px Courier New";
-                    ctx.fillStyle = '#eebc1d';
-                    ctx.fillText(v, 8*x, 36+y*10);
+                    ctx.font = "bold 24px Courier New";
+                    ctx.fillStyle = '#fecc28';
+                    ctx.fillText(v, 20+14*x, 66+y*18);
                 }
             })
         })
