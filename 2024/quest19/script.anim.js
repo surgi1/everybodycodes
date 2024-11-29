@@ -75,6 +75,7 @@ const run3 = ([rots, grid], repeats = 1) => {
     const loop = () => {
         //el.innerHTML = grid.map(line => line.join('')).join("\n");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "12px Courier New";
         ctx.fillText('Iterations: '+n, 12, 12);
         grid.forEach((row, y) => {
             ctx.fillText(row.map(v => v == '.' ? ' ' : v).join(''), 12, 24+y*12);
