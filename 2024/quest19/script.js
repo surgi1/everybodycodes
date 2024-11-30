@@ -68,3 +68,4 @@ const run3 = ([rots, grid], repeats = 1) => {
 console.log('p1', run(init(input1)));
 console.log('p2', run(init(input2), 100));
 console.log('p3', run3(init(input3), 1048576000));
+//run3(init(input4), 1024);
