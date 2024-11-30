@@ -119,8 +119,9 @@ const run2 = map => {
     })
 
     console.log('Part 2 Total travel time is', totalDist, ', but ending alt is only', altsDirs[0].alt);
-    console.log('Since (see map layout) it is quite easy to cycle up into exactly needed alt close to the exit on our (forced) path, chances are the P2 answer is...');
-    return 10000-altsDirs[0].alt+totalDist;
+    console.log('Since (see map layout) it is quite easy to cycle up into exactly needed alt close to the exit on our (forced) path and round to closest even number, chances are the P2 answer is...');
+    let candidate = 10000-altsDirs[0].alt+totalDist;
+    return candidate + (candidate % 2);
 }
 
 console.log('p1', run1(init(input1)));
