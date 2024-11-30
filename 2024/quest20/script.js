@@ -64,7 +64,7 @@ const distanceMap = (map, x, y, z = 10000, startingDist = 0, startingDk = 1) => 
     
     //let zspan = 50, maxDist = 50; // input2t, input2t2
     //let zspan = 100, maxDist = 120; // input2t3, kind of
-    let zspan = 150, maxDist = 200; // input2
+    let zspan = 200, maxDist = 200; // input2
     
     let zmin = Math.floor(z-zspan/2), zmax = Math.ceil(z+zspan/2);
     
