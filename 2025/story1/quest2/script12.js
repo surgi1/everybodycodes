@@ -41,30 +41,25 @@ const place = (nodes, data) => {
         return 0;
     }
     let cur = 0; // start from root
-    let path = '';
     while (true) {
         if (data.val > nodes[cur].val) {
             // go right
             if (nodes[cur].right !== false) {
-                path += nodes[cur].name + '-';
                 cur = nodes[cur].right;
             } else {
                 // add new node, return
                 let newId = addNode(nodes, data, cur, nodes[cur].layer+1);
                 nodes[cur].right = newId;
-                //return path+nodes[cur].name;
                 return newId;
             }
         } else {
             // go left
             if (nodes[cur].left !== false) {
-                path += nodes[cur].name + '-';
                 cur = nodes[cur].left;
             } else {
                 // add new node, return
                 let newId = addNode(nodes, data, cur, nodes[cur].layer+1);
                 nodes[cur].left = newId;
-                //return path+nodes[cur].name;
                 return newId;
             }
         }

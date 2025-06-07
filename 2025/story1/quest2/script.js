@@ -20,9 +20,7 @@ const parse = input => input.split('\n').map(line => {
     }
 })
 
-const initTrees = () => [];
-
-const addNode = (nodes, params, parent = false, layer = 1) => {
+const addNode = (nodes, params, parent = false) => {
     let newId = nodes.length;
     nodes.push({
         id: newId,
@@ -30,7 +28,6 @@ const addNode = (nodes, params, parent = false, layer = 1) => {
         val: params.val,
         left: false,
         right: false,
-        layer: layer,
         parent: parent
     })
     return newId;
@@ -38,36 +35,31 @@ const addNode = (nodes, params, parent = false, layer = 1) => {
 
 const place = (nodes, data, forceRootSide = '') => {
     if (nodes.length == 0) {
-        addNode(nodes, data, false, 1);
+        addNode(nodes, data, false);
         return 0;
     }
     let cur = 0; // start from root
-    let path = '';
     while (true) {
         if (forceRootSide !== 'left' && (data.val > nodes[cur].val || forceRootSide == 'right')) {
             // go right
             if (nodes[cur].right !== false) {
-                path += nodes[cur].name + '-';
                 cur = nodes[cur].right;
                 forceRootSide = '';
             } else {
                 // add new node, return
-                let newId = addNode(nodes, data, cur, nodes[cur].layer+1);
+                let newId = addNode(nodes, data, cur);
                 nodes[cur].right = newId;
-                //return path+nodes[cur].name;
                 return newId;
             }
         } else {
             // go left
             if (nodes[cur].left !== false) {
-                path += nodes[cur].name + '-';
                 cur = nodes[cur].left;
                 forceRootSide = '';
             } else {
                 // add new node, return
-                let newId = addNode(nodes, data, cur, nodes[cur].layer+1);
+                let newId = addNode(nodes, data, cur);
                 nodes[cur].left = newId;
-                //return path+nodes[cur].name;
                 return newId;
             }
         }
@@ -111,11 +103,13 @@ const treeVal = (nodes, branchId) => {
     return layerToText(mostOccupiedLayer, branchId);
 }
 
+const nodeByVal = (nodes, v) => nodes.filter(n => n.val == v)[0];
+
 // p3 needs 1 tree; 1 node storage
 // forced first left/right turn option to be able to add new nodes correctly
 // a switch of nodes is just the switch of those nodes parent's link (and update of the pointer to parent and recalculate layers at the end)
 const part3 = input => {
-    let nodes = initTrees();
+    let nodes = [];
     let data = parse(input);
 
     place(nodes, {val: 0, name: 'ROOT'});
@@ -124,28 +118,23 @@ const part3 = input => {
         if (o.ins == 'SWAP') {
             let swapLine = data.filter(d => d.ins == 'ADD' && d.id == o.id)[0];
             
-            let swapNodeLeft = nodes.filter(n => n.val == swapLine.left[0])[0];
-            let swapNodeRight = nodes.filter(n => n.val == swapLine.right[0])[0];
+            let swapNodeLeft = nodeByVal(nodes, swapLine.left[0]),
+                swapNodeRight = nodeByVal(nodes, swapLine.right[0]);
 
-            let leftParent = nodes[swapNodeLeft.parent];
-            let rightParent = nodes[swapNodeRight.parent];
+            let leftParent = nodes[swapNodeLeft.parent],
+                rightParent = nodes[swapNodeRight.parent];
 
             if (leftParent.id == rightParent.id) {
+                // just switch left and right links
                 let tmp = leftParent.left;
                 leftParent.left = leftParent.right;
                 leftParent.right = tmp;
             } else {
-                if (leftParent.left === swapNodeLeft.id) {
-                    leftParent.left = swapNodeRight.id;
-                } else {
-                    leftParent.right = swapNodeRight.id;
-                }
+                if (leftParent.left === swapNodeLeft.id) leftParent.left = swapNodeRight.id;
+                else leftParent.right = swapNodeRight.id;
 
-                if (rightParent.left === swapNodeRight.id) {
-                    rightParent.left = swapNodeLeft.id;
-                } else {
-                    rightParent.right = swapNodeLeft.id;
-                }
+                if (rightParent.left === swapNodeRight.id) rightParent.left = swapNodeLeft.id;
+                else rightParent.right = swapNodeLeft.id;
 
                 swapNodeLeft.parent = rightParent.id;
                 swapNodeRight.parent = leftParent.id;
