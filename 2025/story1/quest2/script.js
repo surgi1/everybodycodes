@@ -87,18 +87,17 @@ const treeVal = (nodes, branchId) => {
         return nodes[id].name;
     }
 
-    const markRecursive = (id, layer = 2) => {
+    const markSubtree = (id, layer = 2) => {
         nodes[id].marked = true;
         nodes[id].layer = layer;
-        if (nodes[id].left) markRecursive(nodes[id].left, layer+1);
-        if (nodes[id].right) markRecursive(nodes[id].right, layer+1);
+        if (nodes[id].left) markSubtree(nodes[id].left, layer+1);
+        if (nodes[id].right) markSubtree(nodes[id].right, layer+1);
     }
 
     nodes.forEach(n => n.marked = false); // mark subtree and count layer
-    markRecursive(branchId);
+    markSubtree(branchId);
 
     let layers = Math.max(...nodes.filter(n => n.marked === true).map(n => n.layer));
-    console.log(layers);
 
     let mostOccupiedLayer = 0, maxSum = sumLayer(0);
     for (let i = 1; i <= layers; i++) {
@@ -156,8 +155,6 @@ const part3 = input => {
             place(nodes, {val: o.right[0], name: o.right[1]}, 'right');
         }
     })
-
-    console.log(nodes);
 
     console.log(treeVal(nodes, nodes[0].left) + treeVal(nodes, nodes[0].right));
 }
