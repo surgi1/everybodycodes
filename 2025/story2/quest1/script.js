@@ -44,7 +44,7 @@ const run2 = input => {
     }, 0)
 }
 
-// no branch pruning in place, queued checking all combinations, runtime is ~500ms
+// with cache for picked input slots combo, runtime ~200ms
 const run3 = input => {
     let [board, seqs] = parse(input);
     let lookup = [];
@@ -55,6 +55,7 @@ const run3 = input => {
     //console.table(lookup);
 
     let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
+    let mins = {}, maxs = {};
 
     let queue = lookup.map((col, i) => ({sum: col[0], usedIds: [i], depth: 1})), cur;
 
@@ -64,6 +65,13 @@ const run3 = input => {
             if (cur.sum > max) max = cur.sum;
             continue;
         }
+
+        let k = cur.usedIds.sort().join('_');
+        let progress = false;
+        if (mins[k] === undefined || mins[k] > cur.sum) {mins[k] = cur.sum; progress = true;}
+        if (maxs[k] === undefined || maxs[k] < cur.sum) {maxs[k] = cur.sum; progress = true;}
+        if (!progress) continue;
+
         lookup.forEach((col, i) => {
             if (!cur.usedIds.includes(i)) {
                 let tmp = [];
