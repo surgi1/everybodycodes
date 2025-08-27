@@ -44,7 +44,7 @@ const run2 = input => {
     }, 0)
 }
 
-// super greedy approach, compute cache table and then check all combinations
+// no branch pruning in place, queued checking all combinations, runtime is ~500ms
 const run3 = input => {
     let [board, seqs] = parse(input);
     let lookup = [];
@@ -52,26 +52,33 @@ const run3 = input => {
     for (let n = 0; n <= (board[0].length-1)/2; n++) {
         lookup.push(seqs.map((seq, i) => score(n+1, simulate(board, seq, n*2)/2+1)));
     }
-    console.table(lookup);
+    //console.table(lookup);
 
-    let max = 0, min = 200;
+    let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
 
-    const iterate = (baseSum = 0, pos = 0, omitIds = []) => {
-        if (pos > 5) {
-            if (max < baseSum) max = baseSum;
-            if (min > baseSum) min = baseSum;
-            return;
+    let queue = lookup.map((col, i) => ({sum: col[0], usedIds: [i], depth: 1})), cur;
+
+    while (cur = queue.pop()) {
+        if (cur.depth > 5) {
+            if (cur.sum < min) min = cur.sum;
+            if (cur.sum > max) max = cur.sum;
+            continue;
         }
-        for (let n = 0; n < 20; n++) {
-            if (!omitIds.includes(n)) iterate(baseSum + lookup[n][pos], pos+1, [...omitIds, n]);
-        }
+        lookup.forEach((col, i) => {
+            if (!cur.usedIds.includes(i)) {
+                let tmp = [];
+                tmp.sum = cur.sum + col[cur.depth];
+                tmp.usedIds = cur.usedIds.slice();
+                tmp.usedIds.push(i);
+                tmp.depth = cur.depth+1;
+                queue.push(tmp);
+            }
+        })
     }
-
-    iterate();
 
     return min + ' ' + max;
 }
 
-//console.log('p1', run(input1));
-//console.log('p2', run2(input2));
+console.log('p1', run(input1));
+console.log('p2', run2(input2));
 console.log('p3', run3(input3));
