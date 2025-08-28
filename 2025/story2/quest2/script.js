@@ -16,7 +16,9 @@ const run3 = (input, mult = 100) => {
     let balls = parse(input.repeat(mult));
     let shotPtr = 0, shots = 0, popped = 0, len = balls.length, firstId = 0, halfId = len;
     while (popped < len) {
-        let shotCol = SHOT[shotPtr % 3]; shotPtr++; shots++;
+        let shotCol = SHOT[shotPtr % 3];
+        shotPtr++;
+        shots++;
 
         if (balls[firstId] == shotCol && halfId % 2 == 0) {
             balls[halfId/2] = '-';
@@ -25,12 +27,11 @@ const run3 = (input, mult = 100) => {
         }
 
         balls[firstId] = '-';
+        popped++;
         firstId++;
         halfId++;
 
         while (balls[firstId] == '-') firstId++;
-
-        popped++;
     }
     return shots;
 }
