@@ -24,12 +24,9 @@ const roll = die => {
 }
 
 const run = dice => {
-    console.log(dice);
     let totalPts = 0, rolls = 0;
     while (totalPts < 10000) {
-        dice.forEach(die => {
-            totalPts += roll(die)
-        })
+        dice.forEach(die => totalPts += roll(die))
         rolls++;
     }
     return rolls;
@@ -39,7 +36,6 @@ const run2 = input => {
     let [diceLit, trackLit] = parseSections(input);
     let dice = parse(diceLit), track = trackLit.split('').map(Number);
     let pos = Array.from({length: dice.length}).fill(0);
-    console.log(pos, track);
     let res = [];
     while (res.length < dice.length) {
         dice.forEach((die, id) => {
@@ -92,7 +88,7 @@ const run3 = input => {
         })
     })
 
-    let cur, cache = {};
+    let cur, seen = {};
 
     while (cur = queue.pop()) {
         reachedMap[cur.y][cur.x] = 1;
@@ -100,9 +96,9 @@ const run3 = input => {
         DIRS.forEach(([dx, dy]) => {
             let nx = cur.x+dx, ny = cur.y+dy;
             if (onMap(nx, ny) && map[ny][nx] == diceRolls[cur.id][cur.step+1]) {
-                let k = ny+'_'+nx+'_'+cur.id+'_'+cur.step;
-                if (cache[k] === undefined) {
-                    cache[k] = 1;
+                let k = [nx, ny, cur.id, cur.step].join(',');
+                if (seen[k] === undefined) {
+                    seen[k] = 1;
                     queue.push({
                         x: nx, y: ny, id: cur.id, step: cur.step+1
                     })
@@ -111,12 +107,11 @@ const run3 = input => {
         })
     }
 
-    //console.table(reachedMap)
-    let el = document.getElementById('root');
-    el.innerHTML = reachedMap.map(row => row.map(v => v == '1' ? '#' : ' ').join('')).join('\n')
+    document.getElementById('root').innerHTML = reachedMap.map(row => row.map(v => v == '1' ? '#' : ' ').join('')).join('\n')
+
     return reachedMap.flat().reduce((a, v) => a + v, 0);
 }
 
-//console.log('p1', run(parse(input1)));
-//console.log('p2', run2(input2));
+console.log('p1', run(parse(input1)));
+console.log('p2', run2(input2));
 console.log('p3', run3(input3));
