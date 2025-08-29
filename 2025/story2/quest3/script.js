@@ -64,16 +64,11 @@ const run3 = input => {
         for (let x = 0; x < map[0].length; x++) reachedMap[y][x] = 0;
     }
 
-    const iterMap = callback => {
-        for (let y = 0; y < map.length; y++) for (let x = 0; x < map[0].length; x++) callback(x, y, map[y][x]);
-    }
-
     const onMap = (x, y) => x >= 0 && y >= 0 && x <= maxx && y <= maxy;
 
-    let mapSize = map.length * map[0].length;
+    // precompute a large enough nr of dice rolls
     let diceRolls = [];
-
-    for (let i = 0; i < mapSize; i++) {
+    for (let i = 0; i < map.length * map[0].length; i++) {
         dice.forEach((die, id) => {
             let res = roll(die);
             if (diceRolls[id] == undefined) diceRolls[id] = [];
@@ -81,14 +76,13 @@ const run3 = input => {
         })
     }
 
-    let queue = [];
-    iterMap((x, y, v) => {
-        diceRolls.forEach((r, i) => {
-            if (r[0] == v) queue.push({x: x, y: y, id: i, step: 0});
-        })
-    })
+    let queue = [], cur, seen = {};
 
-    let cur, seen = {};
+    for (let y = 0; y < map.length; y++) for (let x = 0; x < map[0].length; x++) {
+        diceRolls.forEach((r, i) => {
+            if (r[0] == map[y][x]) queue.push({x: x, y: y, id: i, step: 0});
+        })
+    }
 
     while (cur = queue.pop()) {
         reachedMap[cur.y][cur.x] = 1;
@@ -107,7 +101,7 @@ const run3 = input => {
         })
     }
 
-    document.getElementById('root').innerHTML = reachedMap.map(row => row.map(v => v == '1' ? '#' : ' ').join('')).join('\n')
+    document.getElementById('root').innerHTML = reachedMap.map(row => row.map(v => v == '1' ? '#' : ' ').join('')).join('\n');
 
     return reachedMap.flat().reduce((a, v) => a + v, 0);
 }
