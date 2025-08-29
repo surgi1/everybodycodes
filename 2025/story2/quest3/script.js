@@ -15,10 +15,10 @@ const parse = input => input.split('\n').map(row => {
 
 const roll = die => {
     die.rolls++;
-    die.spin = (die.rolls) * die.pulse;
+    die.spin = die.rolls * die.pulse;
     die.lastResultFaceId = (die.lastResultFaceId + die.spin) % die.faces.length;
     die.pulse = (die.pulse + die.spin) % die.seed;
-    die.pulse = die.pulse + 1 + (die.rolls) + die.seed;
+    die.pulse = die.pulse + 1 + die.rolls + die.seed;
     return die.faces[die.lastResultFaceId];
 }
 
