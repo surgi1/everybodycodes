@@ -21,21 +21,28 @@ const p1 = ([names, rules]) => names.filter(name => validateName(name, rules));
 const p2 = ([names, rules]) => names.reduce((res, name, id) => res + (validateName(name, rules) ? id+1 : 0), 0);
 
 const p3 = ([names, rules]) => {
-    let seen = {}, rulesO = {}, cur;
-    let stack = p1([names, rules]);
-
+    let rulesO = {}, total = 0;
     rules.forEach(rule => rulesO[rule.left] = rule.right);
 
-    while (cur = stack.pop()) {
-        if (seen[cur] !== undefined) continue;
-        seen[cur] = 1;
-        if (cur.length > 10) continue;
-        let left = cur[cur.length-1];
-        if (rulesO[left] === undefined) continue;
-        stack.push(...rulesO[left].map(r => cur+r));
+    let recur = (left, len) => {
+        if (len >= 11) {
+            total++;
+            return;
+        }
+        if (len > 6) total++;
+        if (rulesO[left] === undefined) return;
+        rulesO[left].forEach(right => recur(right, len+1));
     }
 
-    return Object.keys(seen).filter(n => n.length > 6).length
+    names = p1([names, rules]);
+
+    names.forEach((name, id) => {
+        if (names.filter((n, i) => i != id).filter(n => name.indexOf(n) > -1).length == 0) {
+            recur(name[name.length-1], name.length)
+        }
+    });
+
+    return total;
 }
 
 console.log('p1', p1(parse(input1))[0]);
