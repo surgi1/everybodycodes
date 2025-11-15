@@ -1,8 +1,8 @@
 const parse = input => input.split('\n').map(row => row.split(''))
 
-const moves = [[-2, -1], [-1, -2], [1, -2], [2, -1],  [-2, 1], [-1, 2], [1, 2], [2, 1]]; // relative to 0,0, as x,y
+const DRAGON_DIRS = [[-2, -1], [-1, -2], [1, -2], [2, -1],  [-2, 1], [-1, 2], [1, 2], [2, 1]]; // relative to 0,0, as x,y
 
-const p12 = (map, steps = 3, sheepMoves = [[0, 1]]) => {
+const p12 = (map, steps = 3, SHEEP_DIRS = [[0, 1]]) => {
     let dragon = {}, sheep = {}, hideouts = {}, eaten = 0;
 
     let cols = map[0].length, rows = map.length;
@@ -14,40 +14,30 @@ const p12 = (map, steps = 3, sheepMoves = [[0, 1]]) => {
     }))
 
     const advanceBoard = () => {
-        let newDragon = {}, newSheep = {};
-        Object.values(dragon).forEach(([x, y]) => moves.forEach(([dx, dy]) => {
-            let nx = x+dx, ny = y+dy;
-            if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) newDragon[nx+'_'+ny] = [nx, ny];
-        }))
+        const advanceChars = (chars, moves, res = {}) => {
+            Object.values(chars).forEach(([x, y]) => moves.forEach(([dx, dy]) => {
+                let nx = x+dx, ny = y+dy;
+                if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) res[nx+'_'+ny] = [nx, ny];
+            }))
+            return res;
+        }
 
-        dragon = newDragon;
-
-        // check eaten sheep before sheep move
-        Object.keys(dragon).filter(k => sheep[k] !== undefined && hideouts[k] === undefined).forEach(k => {
+        const eatSheep = () => Object.keys(dragon).filter(k => sheep[k] !== undefined && hideouts[k] === undefined).forEach(k => {
             eaten++;
             delete sheep[k];
         })
 
-        // move remaining sheep
-        Object.values(sheep).forEach(([x, y]) => sheepMoves.forEach(([dx, dy]) => {
-            let nx = x+dx, ny = y+dy;
-            if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) newSheep[nx+'_'+ny] = [nx, ny];
-        }))
+        dragon = advanceChars(dragon, DRAGON_DIRS);
+        eatSheep();
 
-        sheep = newSheep;
-
-        // check eaten sheep after sheep move
-        Object.keys(dragon).filter(k => sheep[k] !== undefined && hideouts[k] === undefined).forEach(k => {
-            eaten++;
-            delete sheep[k];
-        })
+        sheep = advanceChars(sheep, SHEEP_DIRS);
+        eatSheep();
     }
 
     for (let t = 0; t < steps; t++) advanceBoard();
 
     return eaten;
 }
-
 
 const p3 = (map) => {
     let dragon = {}, sheep = [], hideouts = {}, escapes = {};
@@ -78,7 +68,7 @@ const p3 = (map) => {
             if (hideouts[k] || !(nx == state.dragon.x && ny == state.dragon.y)) sheepMoves.push({id:id, x:nx, y:ny});
         })
         
-        moves.forEach(([dx, dy]) => {
+        DRAGON_DIRS.forEach(([dx, dy]) => {
             let nx = state.dragon.x+dx, ny = state.dragon.y+dy;
             if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) dragonMoves.push({x:nx, y:ny});
         })
@@ -129,7 +119,5 @@ const p3 = (map) => {
 }
 
 console.log('p1', p12(parse(input1), 4, [[0, 0]]));
-
 console.log('p2', p12(parse(input2), 20));
-
 console.log('p3', p3(parse(input3)));
