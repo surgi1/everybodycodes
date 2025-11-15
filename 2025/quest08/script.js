@@ -34,7 +34,7 @@ const visualize = (arr, parts = 256, id = 'canvas') => {
     let canvas = document.getElementById(id), ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 1000, 1000);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(32, 32, 64, 0.2)';
+    ctx.strokeStyle = 'rgba(0, 0, 32, 0.3)';
 
     const coords = pin => {
         pin = pin-1;

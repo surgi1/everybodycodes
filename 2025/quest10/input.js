@@ -174,6 +174,12 @@ let input3t4 = `.SS.S
 .####
 ##D.#`
 
+let input3t5 = `SSS.S
+.....
+#.#.#
+.#.#.
+#.D.#`
+
 let input3 = `SS.SS.S
 .......
 .....##
