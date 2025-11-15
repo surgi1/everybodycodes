@@ -21,14 +21,16 @@ const p2 = data => findChildren(data).reduce((res, ids) => res + p1(ids.map(id =
 
 const p3 = data => {
     let triplets = findChildren(data),
-        max = 0, maxMembers = 0;
+        max = 0, maxMembers = 0, metaseen = {};
 
     triplets.forEach(([p1, p2, c]) => {
         let stack = [p1, p2, c], seen = {};
+        if (metaseen[p1] || metaseen[p2] || metaseen[c]) return true;
         while (stack.length > 0) {
             let cur = stack.pop();
             if (seen[cur] !== undefined) continue;
             seen[cur] = cur+1;
+            metaseen[cur] = 1;
             stack.push(...triplets.filter(t => t.includes(cur)).flat())
         }
 
