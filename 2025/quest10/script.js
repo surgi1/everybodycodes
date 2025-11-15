@@ -98,7 +98,7 @@ const p3 = (map) => {
     let memo = {};
 
     const winsFromStateMemoized = state => {
-        let k = state.dragon.x + '_' + state.dragon.y + '__'+ state.sheep.map(shp => shp.x+'_'+shp.y).join(';')
+        let k = [state.dragon, ...state.sheep].map(k => k.x+','+k.y).join('_');
         if (memo[k] !== undefined) return memo[k];
 
         let wins = 0;
