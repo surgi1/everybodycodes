@@ -28,6 +28,29 @@ const p2 = (arr, parts = 256) => {
     return res;
 }
 
+const visualize = (arr, parts = 256, id = 'canvas') => {
+    let r = 500;
+    let angle = 2*Math.PI/parts;
+    let canvas = document.getElementById(id), ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(32, 32, 64, 0.2)';
+
+    const coords = pin => {
+        pin = pin-1;
+        return [500 + r*Math.sin(pin*angle), 500 - r*Math.cos(pin*angle)]
+    }
+
+    arr.forEach((pin, id) => {
+        if (id != 0) {
+            ctx.beginPath();
+            ctx.moveTo(...coords(arr[id-1]));
+            ctx.lineTo(...coords(pin));
+            ctx.stroke();
+        }
+    })
+}
+
 const p3 = (arr, parts = 256) => {
     let max = 0;
     for (k1 = 1; k1 <= parts; k1++) {
@@ -40,8 +63,9 @@ const p3 = (arr, parts = 256) => {
     return max;
 }
 
+visualize(parse(input2), 256);
+visualize(parse(input3), 256, 'canvas2');
+
 console.log('p1', p1(parse(input1)));
-//console.log('p2', p2(parse(input2t), 8));
 console.log('p2', p2(parse(input2), 256));
-//console.log('p3', p3(parse(input3t), 8));
 console.log('p3', p3(parse(input3), 256));
