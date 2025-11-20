@@ -27,20 +27,21 @@ const animate = (map, dmap, t = 0) => {
 const explode = (map, queue, anim = false) => {
     let rows = map.length, cols = map[0].length;
     let cur, seen = {};
-    queue = queue.map(v => [...v, 0]);
     let dmap = map.map(row => row.map(v => undefined));
 
-    while (cur = queue.pop()) {
-        let k = cur[0]+'_'+cur[1];
-        if (seen[k] !== undefined) continue;
-        seen[k] = cur.slice(0);
-        dmap[cur[1]][cur[0]] = cur[2];
-        DIRS.forEach(d => {
-            let nx = cur[0]+d[0], ny = cur[1]+d[1];
-            if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) return true;
-            if (map[cur[1]][cur[0]] >= map[ny][nx]) queue.push([nx, ny, cur[2]+1]);
-        })
+    const spread = (x, y, t) => {
+        if (dmap[y][x] !== undefined) return;
+        let k = x+'_'+y;
+        seen[k] = [x, y];
+        dmap[y][x] = t;
+        if (x > 0 && map[y][x] >= map[y][x-1]) spread(x-1, y, t+1);
+        if (y > 0 && map[y][x] >= map[y-1][x]) spread(x, y-1, t+1);
+        if (x < cols-1 && map[y][x] >= map[y][x+1]) spread(x+1, y, t+1);
+        if (y < rows-1 && map[y][x] >= map[y+1][x]) spread(x, y+1, t+1);
     }
+
+    queue.forEach(([x, y]) => spread(x, y, 0));
+
     if (anim) animate(map, dmap);
     return seen;
 }
@@ -58,6 +59,12 @@ const p3 = (map) => {
         for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
             if (map[y][x] == 10) continue;
             if (seen[x+'_'+y] !== undefined) continue;
+            let neighbors = [];
+            if (x > 0) neighbors.push(map[y][x-1]);
+            if (y > 0) neighbors.push(map[y-1][x]);
+            if (x < cols-1) neighbors.push(map[y][x+1]);
+            if (y < rows-1) neighbors.push(map[y+1][x]);
+            if (map[y][x] < Math.max(...neighbors)) continue;
             seen = explode(map, [[x, y]]);
             let count = Object.keys(seen).length;
             if (count > max) {
