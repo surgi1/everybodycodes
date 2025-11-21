@@ -2,10 +2,11 @@ const parse = input => input.split('\n').map(row => row.split('').map(v => v == 
 
 const DIRS = [[-1, -1], [-1, 1], [1, -1], [1, 1]]; // diagonals
 
-const onMap = (map, x, y) => map[y] !== undefined && map[y][x] !== undefined;
+const onMap = (map, x, y) => map[y] !== undefined && map[y][x] !== undefined ? map[y][x] : 0;
+const val = map => map.flat().reduce((a, v) => a+v, 0);
 
 const advance = map => map.map((row, y) => row.map((v, x) => {
-    let activeDiagonals = DIRS.reduce((a, [dx, dy]) => a + (onMap(map, x+dx, y+dy) ? map[y+dy][x+dx] : 0) , 0)
+    let activeDiagonals = DIRS.reduce((a, [dx, dy]) => a + onMap(map, x+dx, y+dy) , 0)
     if (v == 1) {
         return activeDiagonals % 2 == 1 ? 1 : 0
     } else {
@@ -17,12 +18,10 @@ const p1 = (map, rounds = 10) => {
     let res = 0;
     for (let i = 0; i < rounds; i++) {
         map = advance(map);
-        res += map.flat().reduce((a, v) => a+v, 0);
+        res += val(map);
     }
     return res;
 }
-
-const val = map => map.flat().reduce((a, v) => a+v, 0);
 
 const getCenterFlat = map => {
     let res = '';
@@ -63,7 +62,7 @@ const p3 = (central, rounds = 1000000000) => {
     let remaining = (rounds-offset) % cycleLen;
 
     let i = 1;
-    while (remaining - (matchedRounds[i] - matchedRounds[i-1]) > 0) {
+    while (remaining > matchedRounds[i] - matchedRounds[i-1]) {
         res += matchedRoundsValues[i-1];
         remaining -= (matchedRounds[i] - matchedRounds[i-1]);
         i++;

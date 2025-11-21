@@ -10,8 +10,15 @@ let size = 5;
 const draw = (map, ctx) => {
     ctx.clearRect(0, 0, 1000, 1000);
     map.forEach((row, y) => row.forEach((v, x) => {
-        ctx.fillStyle = 'rgb(' + v.map(n => n*20).join(',') + ', 1)';
-        ctx.fillRect(x*size, y*size, size, size);
+        ctx.fillStyle = 'rgb(' + v.map(n => n*20).join(',') + ')';
+        //ctx.fillRect(x*size, y*size, size, size);
+        ctx.beginPath();
+        let adjust = 0;
+        if (v[0] > v[1]) {
+            adjust = (v[0]-v[1])/3;
+        }
+        ctx.arc(x*size - adjust/2, y*size - adjust/2, (size+adjust)/2, 0, 2 * Math.PI);
+        ctx.fill();
     }))
 }
 
