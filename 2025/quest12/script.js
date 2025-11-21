@@ -33,13 +33,17 @@ const animate = (map, dmap, t = 0, ctxId = 0) => {
     }, 20)
 }
 
-const explode = (map, queue, anim = false) => {
+const explode = (map, queue, anim = false, precise = false) => {
     let rows = map.length, cols = map[0].length;
     let cur, seen = {};
     let dmap = map.map(row => row.map(v => undefined));
 
     const spread = (x, y, t) => {
-        if (dmap[y][x] !== undefined) return;
+        if (precise) {
+            if (dmap[y][x] !== undefined && dmap[y][x] <= t) return;
+        } else {
+            if (dmap[y][x] !== undefined) return;
+        }
         let k = x+'_'+y;
         seen[k] = [x, y];
         dmap[y][x] = t;
@@ -57,7 +61,7 @@ const explode = (map, queue, anim = false) => {
 
 const p1 = (map) => Object.keys(explode(map, [[0, 0]])).length;
 
-const p2 = (map, anim = 0) => Object.keys(explode(map, [[0, 0], [map[0].length-1, map.length-1]], anim)).length;
+const p2 = (map, anim = 0) => Object.keys(explode(map, [[0, 0], [map[0].length-1, map.length-1]], anim, true)).length;
 
 const p3 = (map, anim = 1) => {
     let origMap = map.map(row => row.slice(0));
@@ -86,7 +90,7 @@ const p3 = (map, anim = 1) => {
         res += max;
     }
 
-    explode(origMap, queue, anim);
+    explode(origMap, queue, anim, true);
 
     return res;
 }
