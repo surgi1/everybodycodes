@@ -13,24 +13,26 @@ const p1 = (arr, dials = 2025) => {
 
 const p2 = (arr, dials = 20252025) => {
     let data = Array(arr.length+1);
-    data[0] = [1];
+    data[0] = [1, 1, 1]; // start, end, length
     arr.forEach(([from, to], i) => {
         let pos = Math.floor(i/2);
-        let v = [];
-        for (let n = from; n <= to; n++) v.push(n);
-        if (i % 2 == 0) data[1+pos] = v; else data[data.length-1-pos] = v.reverse()
+        let v = [from, to];
+        if (i % 2 == 1) v = v.reverse();
+        v.push(Math.abs(from-to)+1);
+        if (i % 2 == 0) data[1+pos] = v; else data[data.length-1-pos] = v
     })
 
-    let len = data.reduce((a, v) => a+v.length, 0);
+    let len = data.reduce((a, v) => a+v[2], 0);
     let resPos = dials % len, dataId = 0;
 
-    while (data[dataId].length < resPos) {
-        resPos -= data[dataId].length;
+    while (data[dataId][2] < resPos) {
+        resPos -= data[dataId][2];
         dataId++;
     }
 
-    return data[dataId][resPos];
+    return data[dataId][0] + resPos * Math.sign(data[dataId][1] - data[dataId][0]);
 }
+
 
 console.log('p1', p1(parse(input1)));
 console.log('p2', p2(parse2(input2)));

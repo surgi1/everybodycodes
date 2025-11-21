@@ -1,11 +1,13 @@
 const parse = input => input.split('\n').map(row => row.split('').map(Number))
 
 let DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]]
-let canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+let canvas = document.getElementById('canvas');
+let canvas2 = document.getElementById('canvas2'), ctx = canvas.getContext('2d');
+let ctxs = [canvas.getContext('2d'), canvas2.getContext('2d')];
 
 let size = 5;
 
-const draw = map => {
+const draw = (map, ctx) => {
     ctx.clearRect(0, 0, 1000, 1000);
     map.forEach((row, y) => row.forEach((v, x) => {
         ctx.fillStyle = 'rgb(' + v.map(n => n*20).join(',') + ', 1)';
@@ -13,14 +15,14 @@ const draw = map => {
     }))
 }
 
-const animate = (map, dmap, t = 0) => {
+const animate = (map, dmap, t = 0, ctxId = 0) => {
     draw(map.map((row, y) => row.map((v, x) => {
         if (dmap[y][x] === undefined || t < dmap[y][x]) return [v, v, v];
         let r = Math.max(0, 15 - (t - dmap[y][x])/2);
         return [r, 0, 0];
-    })))
+    })), ctxs[ctxId])
     setTimeout(() => {
-        animate(map, dmap, t+1)
+        animate(map, dmap, t+1, ctxId)
     }, 20)
 }
 
@@ -42,15 +44,15 @@ const explode = (map, queue, anim = false) => {
 
     queue.forEach(([x, y]) => spread(x, y, 0));
 
-    if (anim) animate(map, dmap);
+    if (anim !== false) animate(map, dmap, 0, anim);
     return seen;
 }
 
 const p1 = (map) => Object.keys(explode(map, [[0, 0]])).length;
 
-const p2 = (map) => Object.keys(explode(map, [[0, 0], [map[0].length-1, map.length-1]], false)).length;
+const p2 = (map, anim = 0) => Object.keys(explode(map, [[0, 0], [map[0].length-1, map.length-1]], anim)).length;
 
-const p3 = (map) => {
+const p3 = (map, anim = 1) => {
     let origMap = map.map(row => row.slice(0));
     let rows = map.length, cols = map[0].length, res = 0, queue = [[0,0],[0,0],[0,0]];
     for (let phase = 0; phase < 3; phase++) {
@@ -77,7 +79,7 @@ const p3 = (map) => {
         res += max;
     }
 
-    explode(origMap, queue, true);
+    explode(origMap, queue, anim);
 
     return res;
 }
