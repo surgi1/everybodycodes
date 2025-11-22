@@ -76,8 +76,7 @@ const insideWall = (wall, pos) => {
     return false;
 }
 
-// adaptive floodfill
-// you always occupy top left corner of the cell
+// floodfill over compressed grid
 const adaptiveDistanceMap = (map, agridXs, agridYs, froms, wall = '#', path = ' ') => {
     const offMap = (x, y) => x <= 0 || y <= 0 || x >= cols || y >= rows;
 
@@ -118,8 +117,8 @@ const p2 = instructions => {
     let dir = [0, -1]; // facing up
     instructions.forEach(([turn, len], i) => {
         dir = rotate(dir, turn);
-        let segStart = i == 0 ? addv(pos, dir) : pos.slice(),
-            segEnd = addv(pos, mulv(dir, len - (i == instructions.length-1 ? 1 : 0) )); // to cope with the remaining caret, the end point
+        let segStart = i == 0 ? addv(pos, dir) : pos.slice(), // first wall starts next to start loc, not at it
+            segEnd = addv(pos, mulv(dir, len - (i == instructions.length-1 ? 1 : 0) )); // last wall ends before end loc, not at it
         walls.push([segStart, segEnd]);
         pos = addv(pos,  mulv(dir, len))
     })
