@@ -1,11 +1,8 @@
-const parseSections = input => input.split('\n\n');
-
 const parse = input => {
-    let plants = [];
-    let branches = [];
-    let tests = [];
+    let plants = [], branches = [], tests = [];
     let chapters = input.split('\n\n\n');
-    parseSections(chapters[0]).forEach(section => {
+
+    chapters[0].split('\n\n').forEach(section => {
         let tmp = section.split('\n').map(line => line.match(/(-)*(\d)+/g).map(Number));
         let base = tmp.shift();
         let plant = {
@@ -29,8 +26,6 @@ const parse = input => {
     return [plants, branches, tests];
 }
 
-let sum = arr => arr.reduce((a, v) => a+v, 0);
-
 const byId = (plants, id) => plants.filter(p => p.id == id)[0];
 
 const plantInput = (id, plants, branches) => branches.filter(b => b.from == id).reduce((a, b) => {
@@ -45,6 +40,7 @@ const p1 = ([plants, branches], initCfg = false) => {
         p.input = 0;
         p.processed = false;
     })
+
     // light up orphans
     branches.filter(b => b.to === undefined).forEach((b, id) => {
         let plant = byId(plants, b.from);
@@ -62,7 +58,6 @@ const p1 = ([plants, branches], initCfg = false) => {
     while (changed) {
         changed = false;
         plants.forEach(plant => {
-            //if (plant.output != 0) return true;
             if (plant.processed) return true;
             let input = plantInput(plant.id, plants, branches);
             if (input >= plant.thick) {
