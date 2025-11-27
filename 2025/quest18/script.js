@@ -90,7 +90,7 @@ const p3 = ([plants, branches, tests]) => {
 
     while (newMax > max) {
         max = newMax;
-        // naively check just 1-bit-difference variants - work like a charm :shrug:
+        // naively check just 1-bit-difference variants - works like a charm :shrug:
         let baseCfg = maxCfg.slice(0);
         for (let i = 0; i < baseCfg.length; i++) {
             let testCfg = baseCfg.slice(0);
