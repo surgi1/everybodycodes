@@ -1,5 +1,6 @@
 const parse = input => input.split('\n').map(line => line.split(''))
 
+// transform to orthogonal grid such that the co-sided Ts will be either in the row above or below, with delta x = -1, 0, 1
 const constructMap = data => {
     let map = [];
     for (let y = 0; y < data.length*2; y++) {
@@ -11,10 +12,10 @@ const constructMap = data => {
         let colId = x;
         map[rowId][colId] = v;
     }))
-    return map    
+    return map;
 }
 
-const run = data => {
+const p1 = data => {
     let res = 0;
     let map = constructMap(data);
 
@@ -29,82 +30,25 @@ const run = data => {
     return res;
 }
 
-const nextMoves = (map, refx, refy) => {
+const nextMoves = (map, ox, oy) => {
     let moves = [];
-
-    if (['T', 'E'].includes(map[refy][refx])) moves.push([refx, refy]); // jumping on a spot are we?
+    if (['T', 'E'].includes(map[oy][ox])) moves.push([ox, oy]); // jumping on a spot are we?
 
     for (j = -1; j <= 1; j += 2) {
-        let y = refy+j;
+        let y = oy+j;
         if (map[y] === undefined) continue;
-
         for (let i = -1; i <= 1; i++) {
-            if (map[y][refx+i] === undefined) continue;
-            if (['T', 'E'].includes(map[y][refx+i])) moves.push([refx+i, y]);
+            if (map[y][ox+i] === undefined) continue;
+            if (['T', 'E'].includes(map[y][ox+i])) moves.push([ox+i, y]);
         }
     }
-
     return moves;
 }
 
-const distanceMap = (map, x, y) => {
+// floodfill, circles maps with each tick
+const distanceToEnd = (maps, x, y) => {
     let stack = [[x, y, 0]];
-    let dmap = [], rows = map.length, cols = map[0].length, cur;
-    let res = Infinity;
-    
-    for (let y = 0; y < rows; y++) {
-        dmap[y] = [];
-        for (let x = 0; x < cols; x++) {
-            dmap[y][x] = Infinity;
-        } 
-    }
-
-    while (cur = stack.shift()) {
-        let [x, y, d] = cur;
-
-        if (dmap[y][x] <= d) continue;
-        dmap[y][x] = d;
-
-        if (map[y][x] == 'E') {
-            if (d < res) res = d;
-            continue;
-        }
-
-        nextMoves(map, x, y).forEach(([nx, ny]) => {
-            if (dmap[ny][nx] > d+1) stack.push([nx, ny, d+1]);
-        })
-    }
-    return res;
-}
-
-
-const run2 = data => {
-    let map = constructMap(data), start = [];
-
-    map.forEach((row, y) => row.forEach((v, x) => {
-        if (v == 'S') start = [x, y];
-    }))
-
-    return distanceMap(map, ...start);
-}
-
-const rotate120deg = map => {
-    let map2 = map.map((row, y) => row.map((v, x) => '.'))
-
-    map.forEach((row, y) => row.forEach((v, x) => {
-        let tx = y;
-        let ty = x - Math.floor(y/2);
-        tx += Math.floor(ty/2);
-        if (map[ty] === undefined || map[ty][tx] === undefined) return true;
-        map2[ty][tx] = v;
-    }));
-    return map2.map(row => row.reverse());
-}
-
-const distanceMaps = (maps, x, y) => {
-    let stack = [[x, y, 0]];
-    let dmaps = [], rows = maps[0].length, cols = maps[0][0].length, cur;
-
+    let dmaps = [], rows = maps[0].length, cols = maps[0][0].length, mapsCount = maps.length, cur;
     let res = Infinity;
     
     for (let i = 0; i < maps.length; i++) {
@@ -120,23 +64,45 @@ const distanceMaps = (maps, x, y) => {
     while (cur = stack.shift()) {
         let [x, y, d] = cur;
 
-        if (dmaps[d % 3][y][x] <= d) continue;
-        dmaps[d % 3][y][x] = d;
+        if (dmaps[d % mapsCount][y][x] <= d) continue;
+        dmaps[d % mapsCount][y][x] = d;
 
-        if (maps[d % 3][y][x] == 'E') {
+        if (maps[d % mapsCount][y][x] == 'E') {
             if (d < res) res = d;
             continue;
         }
 
-        nextMoves(maps[(d+1) % 3], x, y).forEach(([nx, ny]) => {
+        nextMoves(maps[(d+1) % mapsCount], x, y).forEach(([nx, ny]) => {
             stack.push([nx, ny, d+1]);
         })
     }
     return res;
 }
 
+const p2 = data => {
+    let map = constructMap(data), start = [];
 
-const run3 = data => {
+    map.forEach((row, y) => row.forEach((v, x) => {
+        if (v == 'S') start = [x, y];
+    }))
+
+    return distanceToEnd([map], ...start);
+}
+
+const rotate120deg = map => {
+    let map2 = map.map((row, y) => row.map((v, x) => '.'))
+
+    map.forEach((row, y) => row.forEach((v, x) => {
+        let tx = y;
+        let ty = x - Math.floor(y/2);
+        tx += Math.floor(ty/2);
+        if (map[ty] === undefined || map[ty][tx] === undefined) return true;
+        map2[ty][tx] = v;
+    }));
+    return map2.map(row => row.reverse());
+}
+
+const p3 = data => {
     let map = constructMap(data), start = [];
     let map2 = rotate120deg(map);
     let map3 = rotate120deg(map2);
@@ -145,10 +111,11 @@ const run3 = data => {
         if (v == 'S') start = [x, y];
     }))
 
-    return distanceMaps([map, map2, map3], ...start);
+    return distanceToEnd([map, map2, map3], ...start);
 }
 
-const run4 = data => {
+// check reddit threads!
+const bonus = data => {
     let map = constructMap(data);
     let map2 = rotate120deg(map);
     let map3 = rotate120deg(map2);
@@ -165,8 +132,7 @@ const run4 = data => {
     document.getElementById('root').innerHTML = comp.map(row => row.join('')).join('\n');
 }
 
-console.log('p1', run(parse(input1)));
-console.log('p2', run2(parse(input2)));
-console.log('p3', run3(parse(input3)));
-run4(parse(input4));
-
+console.log('p1', p1(parse(input1)));
+console.log('p2', p2(parse(input2)));
+console.log('p3', p3(parse(input3)));
+bonus(parse(input4));
