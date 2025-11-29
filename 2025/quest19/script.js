@@ -22,7 +22,7 @@ S                                |
 */
 // points with odd x+y are unreachable at all
 // the whole task is reduced to check which openings in the last wall are reachable
-// in my p3 input, even the lowest point in the last wall is reachable, si the whole computation was not necessary
+// in my p3 input, even the lowest point in the last wall is reachable, so the whole computation was not necessary
 const run = holes => {
     let lastX = 0;
     let reachedYs = new Set([0]);
@@ -36,7 +36,7 @@ const run = holes => {
             for (let y = y1; y <= y2; y++) {
                 if ((x + y) % 2 == 1) continue; // can't be reached at all
                 reachedYs.forEach(lastY => {
-                    if (Math.abs(y - lastY) <= (x - lastX)) newReachedYs.add(y);
+                    if (Math.abs(y - lastY) <= x - lastX) newReachedYs.add(y);
                 })
             }
         })
