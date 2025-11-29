@@ -148,6 +148,25 @@ const run3 = data => {
     return distanceMaps([map, map2, map3], ...start);
 }
 
+const run4 = data => {
+    let map = constructMap(data);
+    let map2 = rotate120deg(map);
+    let map3 = rotate120deg(map2);
+    let comp = [];
+
+    for (let y = 0; y < map3.length; y++) {
+        comp[y] = [];
+        for (let x = 0; x < map3[0].length; x++) {
+            comp[y][x] = ' ';
+            if (map3[y][x] !== '.') comp[Math.floor(y / 2)][x] = map3[y][x];
+        }
+    }
+
+    document.getElementById('root').innerHTML = comp.map(row => row.join('')).join('\n');
+}
+
 console.log('p1', run(parse(input1)));
 console.log('p2', run2(parse(input2)));
 console.log('p3', run3(parse(input3)));
+run4(parse(input4));
+
