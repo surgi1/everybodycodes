@@ -43,10 +43,10 @@ seg C is 13 units high and vert.length wide, repeated 278017 times
 seg D is 5 x 13, repeated 1 times
 
 
-or maybe a simpler equivalent idea would be to draw just make the map vert.length + 5 wide and horiz.length + 13 high
+equivalent idea would be to draw just make the map vert.length + 5 wide and horiz.length + 13 high
 color it, and then count the holes with multipliers based on belonging to given segment
 
-// let's try 2 runs per each dimmension
+// let's try 2 tiles per each dimmension
 
 horiz-offset.length = 111*2
 vert-offset.length = 113*2

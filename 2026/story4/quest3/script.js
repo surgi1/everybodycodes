@@ -126,7 +126,7 @@ const run3 = data => {
     let horizLen = data.horiz.length;
     let vertLen = data.vert.length;
 
-    let tiles = [2, 2]; // reduce map to x/y full tiles plus overflows; both need to be even for .. err some reason..
+    let tiles = [2, 2]; // reduce map to x/y full tiles plus overflows; this likely needs to be even because of the representation I chose, see above with the grid construction
 
     let horizMult = Math.floor(origH / (tiles[1]*horizLen));
     let vertMult = Math.floor(origW / (tiles[0]*vertLen));
