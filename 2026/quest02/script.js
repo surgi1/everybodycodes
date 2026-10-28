@@ -3,45 +3,28 @@ const parse = input => input.split('\n').map(lineLit => lineLit.split(' ').map(c
 const getCmp = (cmps, a, b) => cmps.filter(o => (o[0] === a && o[2] === b) || (o[0] === b && o[2] === a));
 const getCmpAll = (cmps, a) => cmps.filter(o => o[0] === a || o[2] === a);
 
-const relations = (cmps, i, mode = 'less') => 
+const relations = (cmps, i, mode = '<') => 
     getCmpAll(cmps, i)
-        .filter(o => (o[0] === i && o[1] === (mode === 'less' ? '<' : '>')) || (o[2] === i && o[1] === (mode === 'less' ? '>' : '<')))
+        .filter(o => (o[0] === i && o[1] === (mode === '<' ? '<' : '>')) || (o[2] === i && o[1] === (mode === '<' ? '>' : '<')))
         .map(o => o[0] === i ? o[2] : o[0])
 
 const run = (arr) => arr.reduce((res, cmps) => {
     let max = Math.max(...cmps.map(o => [o[0], o[2]]).flat());
 
-    let nums = [];
-    for (let i = 1; i <= max; i++) nums.push(i);
+    let nums = Array.from({length: max}, (_, i) => i+1)
 
     let pairsFull = max*(max-1)/2;
 
     while (cmps.length < pairsFull) {
         let lastLen = cmps.length;
 
-        for (let i = 1; i <= max; i++) {
-            relations(cmps, i, 'less').forEach(n => {
-                relations(cmps, n, 'less').forEach(j => {
-                    // i < j
-                    let cmp = getCmp(cmps, i, j);
-                    if (cmp.length === 0) cmps.push([i, '<', j]);
-                })
-            })
+        for (let i = 1; i <= max; i++) ['<','>'].forEach(mode => 
+            relations(cmps, i, mode).forEach(n => relations(cmps, n, mode).forEach(j => {
+                if (getCmp(cmps, i, j).length === 0) cmps.push([i, mode, j]); // (i > n > j) => i > j or (i < n < j) => i < j
+            }))
+        )
 
-            relations(cmps, i, 'more').forEach(n => {
-                relations(cmps, n, 'more').forEach(j => {
-                    // i > j
-                    let cmp = getCmp(cmps, i, j);
-                    if (cmp.length === 0) cmps.push([i, '>', j]);
-                })
-            })
-
-        }
-
-        if (lastLen === cmps.length) {
-            console.log('unable to deduce next step');
-            break;
-        }
+        if (lastLen === cmps.length) break;
     }
 
     nums.sort((a, b) => {
@@ -50,11 +33,11 @@ const run = (arr) => arr.reduce((res, cmps) => {
             console.log('undefined relationship between', a, b);
             return 0;
         }
-        cmp = cmp[0];
-        if (cmp[0] === a) {
-            if (cmp[1] === '<') return 1; else return -1;
+
+        if (cmp[0][0] === a) {
+            if (cmp[0][1] === '<') return 1; else return -1;
         } else {
-            if (cmp[1] === '>') return 1; else return -1;
+            if (cmp[0][1] === '>') return 1; else return -1;
         }
     })
 
