@@ -1,14 +1,12 @@
 const extractNumeric = line => line.match(/-?\d+/g);
 
-const parse = input => {
-    let o = {};
-    input.split('\n').forEach(line => {
-        let tmp = line.split(/:|,/g)
-        let res = tmp.shift();
-        o[res] = tmp
-    })
-    return o;
-}
+Object.defineProperty(Array.prototype, 'sum', {
+    value: function() {
+        return this.reduce((a, v) => a + v, 0);
+    }
+});
+
+const parse = input => input.split('\n').map(line => extractNumeric(line).map(Number))
 
 const run = (data) => {
     console.log(data)
